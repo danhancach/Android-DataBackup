@@ -31,6 +31,7 @@ interface IRemoteRootService {
     void validateRusticRepository(String repositoryPath, String password);
     String createRusticSnapshot(String repositoryPath, String password, in List<String> sourcePaths, in List<String> tags, ICallback callback, long cancelId, in String[] optionKeys, in String[] optionValues);
     void restoreRusticSnapshot(String repositoryPath, String password, String snapshotId, String destinationPath);
+    String listRusticSnapshots(String repositoryPath, String password, String tagFilter);
     void checkRusticRepository(String repositoryPath, String password);
     String calculateMD5(String path);
 }

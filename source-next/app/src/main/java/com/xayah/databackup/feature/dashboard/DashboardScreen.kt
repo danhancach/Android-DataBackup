@@ -55,7 +55,7 @@ import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.feature.BackupConfigRoute
 import com.xayah.databackup.feature.BackupDirectoryRoute
 import com.xayah.databackup.feature.BackupSetupRoute
-import com.xayah.databackup.feature.RestoreSettingsRoute
+import com.xayah.databackup.feature.RestoreRoute
 import com.xayah.databackup.feature.UpdatesRoute
 import com.xayah.databackup.feature.update.UpdatesStatus
 import com.xayah.databackup.feature.update.UpdatesViewModel
@@ -181,7 +181,7 @@ fun DashboardScreen(
                 modifier = Modifier.fillMaxWidth(),
                 onBackupApps = { navigator.navigateSafely(BackupSetupRoute) },
                 onManageBackups = onShowBackups,
-                onRestoreSettings = { navigator.navigateSafely(RestoreSettingsRoute) },
+                onRestore = { navigator.navigateSafely(RestoreRoute) },
             )
 
             DashboardBackupsHeader(
@@ -228,7 +228,7 @@ private fun DashboardQuickActions(
     modifier: Modifier = Modifier,
     onBackupApps: () -> Unit,
     onManageBackups: () -> Unit,
-    onRestoreSettings: () -> Unit,
+    onRestore: () -> Unit,
 ) {
     Column(modifier = modifier) {
         SectionHeader(
@@ -259,8 +259,8 @@ private fun DashboardQuickActions(
                 modifier = Modifier.weight(1f),
                 icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
                 title = stringResource(R.string.restore),
-                subtitle = stringResource(R.string.restore_settings),
-                onClick = onRestoreSettings,
+                subtitle = stringResource(R.string.restore_your_data),
+                onClick = onRestore,
             )
         }
     }

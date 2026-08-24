@@ -35,6 +35,21 @@ import com.xayah.databackup.feature.backup.contacts.ContactsViewModel
 import com.xayah.databackup.feature.backup.messages.MessagesViewModel
 import com.xayah.databackup.feature.backup.networks.NetworksViewModel
 import com.xayah.databackup.feature.backup.rustic.RusticBackupProcessViewModel
+import com.xayah.databackup.data.RestoreRepository
+import com.xayah.databackup.data.RestoreProcessRepository
+import com.xayah.databackup.data.rustic.RusticRestoreCoordinator
+import com.xayah.databackup.data.rustic.RusticSnapshotRepository
+import com.xayah.databackup.feature.restore.RestoreHubViewModel
+import com.xayah.databackup.feature.restore.RestoreProcessViewModel
+import com.xayah.databackup.feature.restore.RestoreSetupViewModel
+import com.xayah.databackup.feature.restore.RestoreSnapshotViewModel
+import com.xayah.databackup.feature.restore.apps.RestoreAppsViewModel
+import com.xayah.databackup.feature.restore.rustic.RusticRestoreProcessViewModel
+import com.xayah.databackup.service.util.RestoreAppsHelper
+import com.xayah.databackup.service.util.RestoreCallLogsHelper
+import com.xayah.databackup.service.util.RestoreContactsHelper
+import com.xayah.databackup.service.util.RestoreMessagesHelper
+import com.xayah.databackup.service.util.RestoreNetworksHelper
 import com.xayah.databackup.data.BackupScheduleRepository
 import com.xayah.databackup.data.migration.MigrationRepository
 import com.xayah.databackup.data.ScheduledBackupRunner
@@ -85,6 +100,16 @@ class App : Application(), SingletonImageLoader.Factory {
         singleOf(::RusticBackupSourceCollector)
         singleOf(::RusticBackupCoordinator)
 
+        singleOf(::RestoreRepository)
+        singleOf(::RestoreProcessRepository)
+        singleOf(::RusticRestoreCoordinator)
+        singleOf(::RusticSnapshotRepository)
+        singleOf(::RestoreAppsHelper)
+        singleOf(::RestoreNetworksHelper)
+        singleOf(::RestoreContactsHelper)
+        singleOf(::RestoreCallLogsHelper)
+        singleOf(::RestoreMessagesHelper)
+
         singleOf(::BackupScheduleRepository)
         singleOf(::ScheduledBackupRunner)
         singleOf(::MigrationRepository)
@@ -97,6 +122,12 @@ class App : Application(), SingletonImageLoader.Factory {
         viewModelOf(::NewBackupViewModel)
         viewModelOf(::BackupProcessViewModel)
         viewModelOf(::RusticBackupProcessViewModel)
+        viewModelOf(::RestoreHubViewModel)
+        viewModelOf(::RestoreSetupViewModel)
+        viewModelOf(::RestoreSnapshotViewModel)
+        viewModelOf(::RestoreProcessViewModel)
+        viewModelOf(::RusticRestoreProcessViewModel)
+        viewModelOf(::RestoreAppsViewModel)
         viewModelOf(::BackupConfigViewModel)
         viewModelOf(::AppsViewModel)
         viewModelOf(::NetworksViewModel)

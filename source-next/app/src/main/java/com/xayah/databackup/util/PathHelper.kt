@@ -90,6 +90,9 @@ object PathHelper {
     fun getRusticStagingDir(configUuid: String, createdAt: Long): String =
         "${App.application.cacheDir.path}/$SUBDIR_RUSTIC/$configUuid/$createdAt"
 
+    fun getRusticRestoreStagingDir(configUuid: String, createdAt: Long): String =
+        "${App.application.cacheDir.path}/$SUBDIR_RUSTIC/restore/$configUuid/$createdAt"
+
     fun getBackupAppsApkFilePath(parent: String, appDirName: String): String =
         "${getBackupAppsApkDir(parent, appDirName)}/$APK_FILE_NAME"
 

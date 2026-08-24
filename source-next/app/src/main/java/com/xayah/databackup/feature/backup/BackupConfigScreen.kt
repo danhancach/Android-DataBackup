@@ -51,6 +51,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.feature.BackupSetupRoute
+import com.xayah.databackup.feature.RestoreSetupRoute
 import com.xayah.databackup.ui.component.DataBackupDialog
 import com.xayah.databackup.ui.component.DialogActionButton
 import com.xayah.databackup.ui.component.DialogDestructiveButton
@@ -205,6 +206,11 @@ fun BackupConfigScreen(
                                 navigator.navigateSafely(BackupSetupRoute)
                             }
                         },
+                        onRestoreNow = {
+                            viewModel.selectBackup {
+                                navigator.navigateSafely(RestoreSetupRoute)
+                            }
+                        },
                         onCheckIntegrity = {
                             scope.launch(Dispatchers.IO) {
                                 val report = viewModel.runIntegrityCheck()
@@ -238,6 +244,7 @@ fun BackupConfigScreen(
 private fun BackupConfigContent(
     backupConfig: BackupConfig,
     onBackUpNow: () -> Unit,
+    onRestoreNow: () -> Unit,
     onCheckIntegrity: () -> Unit,
 ) {
     Column(
@@ -259,6 +266,19 @@ private fun BackupConfigContent(
             )
             Spacer(Modifier.size(8.dp))
             Text(stringResource(R.string.back_up_now))
+        }
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            shape = BackupConfigContainerShape,
+            onClick = onRestoreNow,
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_archive_restore),
+                contentDescription = null,
+            )
+            Spacer(Modifier.size(8.dp))
+            Text(stringResource(R.string.restore_now))
         }
 
         Button(

@@ -347,6 +347,10 @@ object RemoteRootService {
             Rustic.restoreSnapshot(repositoryPath, password, snapshotId, destinationPath)
         }
 
+        override fun listRusticSnapshots(repositoryPath: String, password: String, tagFilter: String): String {
+            return Rustic.listSnapshots(repositoryPath, password, tagFilter.ifBlank { null })
+        }
+
         override fun checkRusticRepository(repositoryPath: String, password: String) {
             Rustic.checkRepository(repositoryPath, password)
         }
@@ -614,6 +618,10 @@ object RemoteRootService {
 
     suspend fun restoreRusticSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
         getService()?.restoreRusticSnapshot(repositoryPath, password, snapshotId, destinationPath)
+    }
+
+    suspend fun listRusticSnapshots(repositoryPath: String, password: String, tagFilter: String? = null): String {
+        return getService()?.listRusticSnapshots(repositoryPath, password, tagFilter.orEmpty()) ?: "[]"
     }
 
     suspend fun checkRusticRepository(repositoryPath: String, password: String) {

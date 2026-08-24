@@ -55,6 +55,10 @@ object Rustic {
         nativeRestoreSnapshot(repositoryPath, password, snapshotId, destinationPath)
     }
 
+    fun listSnapshots(repositoryPath: String, password: String, tagFilter: String? = null): String {
+        return nativeListSnapshots(repositoryPath, password, tagFilter.orEmpty())
+    }
+
     fun checkRepository(repositoryPath: String, password: String) {
         nativeCheckRepository(repositoryPath, password)
     }
@@ -86,6 +90,12 @@ object Rustic {
         snapshotId: String,
         destinationPath: String,
     )
+
+    private external fun nativeListSnapshots(
+        repositoryPath: String,
+        password: String,
+        tagFilter: String,
+    ): String
 
     private external fun nativeCheckRepository(repositoryPath: String, password: String)
     private external fun nativeCancelBackup(cancelId: Long)

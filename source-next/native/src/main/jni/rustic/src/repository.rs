@@ -186,6 +186,51 @@ pub fn restore_snapshot(
     Ok(())
 }
 
+pub fn list_snapshots(
+    repository_path: &str,
+    password: &str,
+    tag_filter: Option<&str>,
+) -> Result<String> {
+    let repo = open_repository(repository_path, password, &BTreeMap::new())?.to_indexed_ids()?;
+    let mut snapshots = repo.get_all_snapshots()?;
+    snapshots.sort_unstable_by(|left, right| right.time.cmp(&left.time));
+
+    let mut entries = Vec::new();
+    for snapshot in snapshots {
+        let tags: Vec<String> = snapshot.tags.iter().map(ToString::to_string).collect();
+        if let Some(filter) = tag_filter {
+            if !tags.iter().any(|tag| tag == filter) {
+                continue;
+            }
+        }
+        let tags_json = tags
+            .iter()
+            .map(|tag| format!("\"{}\"", escape_json(tag)))
+            .collect::<Vec<_>>()
+            .join(",");
+        let time_millis: i64 = snapshot
+            .time
+            .timestamp()
+            .as_millisecond()
+            .try_into()
+            .unwrap_or(i64::MAX);
+        entries.push(format!(
+            "{{\"id\":\"{}\",\"time\":{},\"tags\":[{}]}}",
+            snapshot.id, time_millis, tags_json
+        ));
+    }
+
+    Ok(format!("[{}]", entries.join(",")))
+}
+
+fn escape_json(value: &str) -> String {
+    value
+        .replace('\\', "\\\\")
+        .replace('"', "\\\"")
+        .replace('\n', "\\n")
+        .replace('\r', "\\r")
+}
+
 pub fn check_repository(repository_path: &str, password: &str) -> Result<()> {
     let repo = open_repository(repository_path, password, &BTreeMap::new())?;
 

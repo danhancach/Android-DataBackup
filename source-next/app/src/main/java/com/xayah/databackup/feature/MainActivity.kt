@@ -41,6 +41,12 @@ import com.xayah.databackup.feature.settings.BackupDirectoryScreen
 import com.xayah.databackup.feature.settings.BackupDirectoryViewModel
 import com.xayah.databackup.feature.settings.BackupSettingsScreen
 import com.xayah.databackup.feature.settings.RestoreSettingsScreen
+import com.xayah.databackup.feature.restore.RestoreHubScreen
+import com.xayah.databackup.feature.restore.RestoreProcessScreen
+import com.xayah.databackup.feature.restore.RestoreSnapshotScreen
+import com.xayah.databackup.feature.restore.RestoreSetupScreen
+import com.xayah.databackup.feature.restore.apps.RestoreAppsScreen
+import com.xayah.databackup.feature.restore.rustic.RusticRestoreProcessScreen
 import com.xayah.databackup.feature.about.AboutScreen
 import com.xayah.databackup.feature.about.TranslatorsScreen
 import com.xayah.databackup.feature.backup.BackupConfigScreen
@@ -55,6 +61,12 @@ import com.xayah.databackup.feature.backup.contacts.BackupContactsScreen
 import com.xayah.databackup.feature.backup.messages.BackupMessagesScreen
 import com.xayah.databackup.feature.backup.networks.BackupNetworksScreen
 import com.xayah.databackup.feature.backup.rustic.RusticBackupProcessScreen
+import com.xayah.databackup.feature.RestoreAppsRoute
+import com.xayah.databackup.feature.RestoreProcessRoute
+import com.xayah.databackup.feature.RestoreRoute
+import com.xayah.databackup.feature.RestoreSetupRoute
+import com.xayah.databackup.feature.RestoreSnapshotRoute
+import com.xayah.databackup.feature.RusticRestoreProcessRoute
 import com.xayah.databackup.feature.setup.NoPermKey
 import com.xayah.databackup.feature.setup.SetupActivity
 import com.xayah.databackup.feature.update.UpdatesScreen
@@ -288,6 +300,30 @@ class MainActivity : ComponentActivity() {
 
                             entry<RestoreSettingsRoute> {
                                 RestoreSettingsScreen(navigator)
+                            }
+
+                            entry<RestoreRoute> {
+                                RestoreHubScreen(navigator)
+                            }
+
+                            entry<RestoreSetupRoute> {
+                                RestoreSetupScreen(navigator)
+                            }
+
+                            entry<RestoreSnapshotRoute> {
+                                RestoreSnapshotScreen(navigator)
+                            }
+
+                            entry<RestoreAppsRoute> {
+                                RestoreAppsScreen(navigator)
+                            }
+
+                            entry<RestoreProcessRoute> {
+                                RestoreProcessScreen(navigator)
+                            }
+
+                            entry<RusticRestoreProcessRoute> {
+                                RusticRestoreProcessScreen(navigator)
                             }
 
                             entry<DataMigrationRoute> {

@@ -563,6 +563,9 @@
     <string name="no_backups_desc">Create your first backup to get started.</string>
     <string name="last_backup_value">Last backup: %1$s</string>
     <string name="back_up_now">Back up now</string>
+    <string name="restore_now">Restore now</string>
+    <string name="select_backup_to_restore">Select a backup to restore</string>
+    <string name="select_snapshot_to_restore">Select a snapshot to restore</string>
     <string name="no_matching_backups">No matching backups</string>
     <string name="no_matching_backups_desc">Try adjusting your search or filters.</string>
     <string name="clear_filters">Clear filters</string>

@@ -96,6 +96,14 @@ val KeyResetBackupList = booleanPreferencesKey("reset_backup_list")
 const val DefResetBackupList = false
 val ResetBackupList = Pair(KeyResetBackupList, DefResetBackupList)
 
+val KeyResetRestoreList = booleanPreferencesKey("reset_restore_list")
+const val DefResetRestoreList = false
+val ResetRestoreList = Pair(KeyResetRestoreList, DefResetRestoreList)
+
+val KeyLastRestoreTime = longPreferencesKey("last_restore_time")
+const val DefLastRestoreTime = 0L
+val LastRestoreTime = Pair(KeyLastRestoreTime, DefLastRestoreTime)
+
 val KeyDynamicColor = booleanPreferencesKey("dynamic_color")
 const val DefDynamicColor = true
 val DynamicColor = Pair(KeyDynamicColor, DefDynamicColor)
@@ -133,6 +141,30 @@ val CallLogsOptionSelectedBackup = Pair(KeyCallLogsOptionSelectedBackup, DefCall
 val KeyMessagesOptionSelectedBackup = booleanPreferencesKey("messages_option_selected_backup")
 const val DefMessagesOptionSelectedBackup = true
 val MessagesOptionSelectedBackup = Pair(KeyMessagesOptionSelectedBackup, DefMessagesOptionSelectedBackup)
+
+val KeyAppsOptionSelectedRestore = booleanPreferencesKey("apps_option_selected_restore")
+const val DefAppsOptionSelectedRestore = true
+val AppsOptionSelectedRestore = Pair(KeyAppsOptionSelectedRestore, DefAppsOptionSelectedRestore)
+
+val KeyNetworksOptionSelectedRestore = booleanPreferencesKey("networks_option_selected_restore")
+const val DefNetworksOptionSelectedRestore = false
+val NetworksOptionSelectedRestore = Pair(KeyNetworksOptionSelectedRestore, DefNetworksOptionSelectedRestore)
+
+val KeyContactsOptionSelectedRestore = booleanPreferencesKey("contacts_option_selected_restore")
+const val DefContactsOptionSelectedRestore = false
+val ContactsOptionSelectedRestore = Pair(KeyContactsOptionSelectedRestore, DefContactsOptionSelectedRestore)
+
+val KeyCallLogsOptionSelectedRestore = booleanPreferencesKey("call_logs_option_selected_restore")
+const val DefCallLogsOptionSelectedRestore = false
+val CallLogsOptionSelectedRestore = Pair(KeyCallLogsOptionSelectedRestore, DefCallLogsOptionSelectedRestore)
+
+val KeyMessagesOptionSelectedRestore = booleanPreferencesKey("messages_option_selected_restore")
+const val DefMessagesOptionSelectedRestore = false
+val MessagesOptionSelectedRestore = Pair(KeyMessagesOptionSelectedRestore, DefMessagesOptionSelectedRestore)
+
+val KeyRusticRestoreSnapshotId = stringPreferencesKey("rustic_restore_snapshot_id")
+const val DefRusticRestoreSnapshotId = ""
+val RusticRestoreSnapshotId = Pair(KeyRusticRestoreSnapshotId, DefRusticRestoreSnapshotId)
 
 val KeyBackupConfigSelectedUuid = stringPreferencesKey("backup_config_selected_uuid")
 const val DefBackupConfigSelectedUuid = ""

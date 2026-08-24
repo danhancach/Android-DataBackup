@@ -76,4 +76,14 @@ class RusticBackupGateway {
     suspend fun cancelSnapshot(cancelId: Long) {
         RemoteRootService.cancelRusticBackup(cancelId)
     }
+
+    suspend fun listSnapshots(
+        repositoryPath: String,
+        password: String,
+        tagFilter: String? = null,
+        storage: BackupBackend.RusticStorage,
+    ): String {
+        val location = storage.repositoryLocation(repositoryPath)
+        return RemoteRootService.listRusticSnapshots(location, password, tagFilter)
+    }
 }

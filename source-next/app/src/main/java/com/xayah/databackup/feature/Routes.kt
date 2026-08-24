@@ -69,3 +69,21 @@ data object BackupDirectoryRoute : NavKey
 
 @Serializable
 data object RestoreSettingsRoute : NavKey
+
+@Serializable
+data object RestoreRoute : NavKey
+
+@Serializable
+data object RestoreSetupRoute : NavKey
+
+@Serializable
+data object RestoreProcessRoute : NavKey
+
+@Serializable
+data object RestoreSnapshotRoute : NavKey
+
+@Serializable
+data object RusticRestoreProcessRoute : NavKey
+
+@Serializable
+data object RestoreAppsRoute : NavKey
