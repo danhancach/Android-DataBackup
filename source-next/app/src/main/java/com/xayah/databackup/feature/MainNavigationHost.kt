@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.xayah.databackup.feature.backup.BackupLibraryScreen
 import com.xayah.databackup.feature.dashboard.DashboardScreen
+import com.xayah.databackup.feature.schedule.ScheduleScreen
 import com.xayah.databackup.feature.settings.SettingsScreen
 import com.xayah.databackup.ui.component.FloatingNavigationBar
 import com.xayah.databackup.ui.component.FloatingNavigationItem
@@ -33,9 +34,7 @@ import com.xayah.databackup.util.Navigator
 import kotlinx.coroutines.launch
 
 private const val PageAnimationDurationMillis = 400
-private val MainNavigationItems = FloatingNavigationItems.filter { item ->
-    item != FloatingNavigationItem.SCHEDULE
-}
+private val MainNavigationItems = FloatingNavigationItems
 
 @Composable
 fun MainNavigationHost(navigator: Navigator) {
@@ -75,8 +74,8 @@ fun MainNavigationHost(navigator: Navigator) {
                         onShowBackups = { animateToItem(FloatingNavigationItem.BACKUP) },
                     )
                     FloatingNavigationItem.BACKUP -> BackupLibraryScreen(navigator)
+                    FloatingNavigationItem.SCHEDULE -> ScheduleScreen(navigator)
                     FloatingNavigationItem.SETTINGS -> SettingsScreen(navigator)
-                    else -> Unit
                 }
             }
         }

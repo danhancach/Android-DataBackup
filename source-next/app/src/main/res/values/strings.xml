@@ -473,6 +473,17 @@
     <string name="set_up_cloud_storage">Set-up cloud storage</string>
     <string name="schedule">Schedule</string>
     <string name="configure_automatic_backups">Configure automatic backups</string>
+    <string name="schedule_enabled">Automatic backup</string>
+    <string name="schedule_enabled_desc">Run the selected backup once per day</string>
+    <string name="schedule_time">Backup time</string>
+    <string name="schedule_backup_target">Backup target</string>
+    <string name="schedule_next_run_title">Next backup</string>
+    <string name="schedule_next_run">Next run: %1$s</string>
+    <string name="schedule_next_run_disabled">Automatic backup is disabled</string>
+    <string name="schedule_no_backup_selected">No backup selected</string>
+    <string name="schedule_last_run">Last automatic backup</string>
+    <string name="schedule_last_run_never">Never</string>
+    <string name="worker_scheduled_backup">Running scheduled backup</string>
     <string name="backups">Backups</string>
     <string name="other">Other</string>
     <string name="free">Free</string>

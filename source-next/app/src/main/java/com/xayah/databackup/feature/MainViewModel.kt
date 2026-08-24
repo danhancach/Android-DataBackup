@@ -1,5 +1,6 @@
 package com.xayah.databackup.feature
 
+import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.WorkManagerHelper
@@ -8,6 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.koin.core.context.GlobalContext
 
 data class UiState(
     val showErrorServiceDialog: Boolean = false,
@@ -53,6 +56,9 @@ class MainViewModel : BaseViewModel() {
         checkRootService {
             WorkManagerHelper.enqueueOthersUpdateWork()
             WorkManagerHelper.enqueueAppsUpdateWork()
+            viewModelScope.launch(Dispatchers.IO) {
+                GlobalContext.get().get<com.xayah.databackup.data.BackupScheduleRepository>().reschedule()
+            }
         }
     }
 }

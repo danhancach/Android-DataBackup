@@ -26,6 +26,7 @@ object NotificationHelper {
 
     const val NOTIFICATION_ID_APPS_UPDATE_WORKER = 1
     const val NOTIFICATION_ID_OTHERS_UPDATE_WORKER = 2
+    const val NOTIFICATION_ID_SCHEDULED_BACKUP_WORKER = 3
 
     fun checkPermission(context: Context): Boolean =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

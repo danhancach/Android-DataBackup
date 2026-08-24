@@ -457,6 +457,17 @@
     <string name="set_up_cloud_storage">Thiết lập bộ nhớ đám mây</string>
     <string name="schedule">Lịch</string>
     <string name="configure_automatic_backups">Cài đặt sao lưu tự động</string>
+    <string name="schedule_enabled">Sao lưu tự động</string>
+    <string name="schedule_enabled_desc">Chạy bản sao lưu đã chọn mỗi ngày một lần</string>
+    <string name="schedule_time">Giờ sao lưu</string>
+    <string name="schedule_backup_target">Bản sao lưu mục tiêu</string>
+    <string name="schedule_next_run_title">Lần sao lưu tiếp theo</string>
+    <string name="schedule_next_run">Lần chạy tiếp: %1$s</string>
+    <string name="schedule_next_run_disabled">Sao lưu tự động đã tắt</string>
+    <string name="schedule_no_backup_selected">Chưa chọn bản sao lưu</string>
+    <string name="schedule_last_run">Lần sao lưu tự động cuối</string>
+    <string name="schedule_last_run_never">Chưa có</string>
+    <string name="worker_scheduled_backup">Đang chạy sao lưu theo lịch</string>
     <string name="backups">Bản sao lưu</string>
     <string name="other">Khác</string>
     <string name="free">Miễn phí</string>
