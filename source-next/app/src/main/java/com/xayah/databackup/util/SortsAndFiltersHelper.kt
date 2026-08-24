@@ -6,6 +6,7 @@ import com.xayah.databackup.database.entity.ContactDeserialized
 import com.xayah.databackup.database.entity.MmsDeserialized
 import com.xayah.databackup.database.entity.NetworkUnmarshalled
 import com.xayah.databackup.database.entity.SmsDeserialized
+import com.xayah.databackup.entity.RestoreApp
 
 private fun filterUserId(app: App, userId: Int) = app.userId == userId
 
@@ -69,6 +70,34 @@ fun Iterable<App>.sortByUpdateTime(sortSequence: SortsSequence): List<App> =
     }
 
 fun List<App>.sortBySelectedFirst(selectedFirst: Boolean): List<App> =
+    if (selectedFirst) sortedByDescending { it.isSelected } else this
+
+private fun filterRestoreSearchText(app: RestoreApp, searchText: String) =
+    searchText.isEmpty() ||
+        app.label.lowercase().contains(searchText.lowercase()) ||
+        app.packageName.lowercase().contains(searchText.lowercase())
+
+private fun filterRestoreApps(
+    app: RestoreApp,
+    filterUserApps: Boolean,
+    filterSystemApps: Boolean,
+) = (filterUserApps && app.isSystemApp.not()) || (filterSystemApps && app.isSystemApp)
+
+fun Iterable<RestoreApp>.filterRestoreApp(searchText: String): List<RestoreApp> =
+    filter { filterRestoreSearchText(it, searchText) }
+
+fun Iterable<RestoreApp>.filterRestoreApp(
+    filterUserApps: Boolean,
+    filterSystemApps: Boolean,
+): List<RestoreApp> = filter { filterRestoreApps(it, filterUserApps, filterSystemApps) }
+
+fun Iterable<RestoreApp>.sortRestoreByA2Z(sortSequence: SortsSequence): List<RestoreApp> =
+    when (sortSequence) {
+        SortsSequence.ASCENDING -> sortedBy { it.label.lowercase() }
+        SortsSequence.DESCENDING -> sortedByDescending { it.label.lowercase() }
+    }
+
+fun List<RestoreApp>.sortRestoreBySelectedFirst(selectedFirst: Boolean): List<RestoreApp> =
     if (selectedFirst) sortedByDescending { it.isSelected } else this
 
 fun Iterable<NetworkUnmarshalled>.filterNetwork(searchText: String): List<NetworkUnmarshalled> = filter {
