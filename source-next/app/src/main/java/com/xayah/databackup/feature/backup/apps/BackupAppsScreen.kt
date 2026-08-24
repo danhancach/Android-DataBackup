@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,7 +28,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -38,7 +39,6 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -72,6 +72,11 @@ import coil3.request.crossfade
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.App
 import com.xayah.databackup.rootservice.RemoteRootService
+import com.xayah.databackup.ui.component.PreferenceGroupItemSpacing
+import com.xayah.databackup.ui.component.PreferenceGroupListItem
+import com.xayah.databackup.ui.component.PreferenceHorizontalPadding
+import com.xayah.databackup.ui.component.PreferenceItemMinHeight
+import com.xayah.databackup.ui.component.PreferenceItemVerticalPadding
 import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.FilterButton
 import com.xayah.databackup.ui.component.SearchTextField
@@ -243,15 +248,32 @@ fun BackupAppsScreen(
                 } else {
                     LazyColumn(
                         modifier = Modifier.verticalFadingEdges(fadingEdgeState),
-                        state = activeLazyListState
+                        state = activeLazyListState,
+                        verticalArrangement = Arrangement.spacedBy(PreferenceGroupItemSpacing),
+                        contentPadding = PaddingValues(
+                            start = PreferenceHorizontalPadding,
+                            end = PreferenceHorizontalPadding,
+                            top = 8.dp,
+                        ),
                     ) {
-                        items(items = apps, key = { it.pkgUserKey }) { app ->
-                            AppListItem(
+                        itemsIndexed(
+                            items = apps,
+                            key = { _, app -> app.pkgUserKey },
+                        ) { index, app ->
+                            PreferenceGroupListItem(
                                 modifier = Modifier.animateItem(),
-                                context = context,
-                                app = app,
-                                viewModel = viewModel
-                            )
+                                isFirstInGroup = index == 0,
+                                isLastInGroup = index == apps.lastIndex,
+                                onClick = {
+                                    viewModel.selectAll(app.packageName, app.userId, app.toggleableState)
+                                },
+                            ) {
+                                AppListItemContent(
+                                    context = context,
+                                    app = app,
+                                    viewModel = viewModel,
+                                )
+                            }
                         }
 
                         item(key = "-1") {
@@ -472,24 +494,26 @@ fun BackupAppsFilterSheetContent(
 }
 
 @Composable
-fun AppListItem(
-    modifier: Modifier,
+private fun AppListItemContent(
     context: Context,
     app: App,
     viewModel: AppsViewModel,
 ) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        onClick = { viewModel.selectAll(app.packageName, app.userId, app.toggleableState) },
-    ) {
-        var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
 
-        Column(modifier = Modifier.padding(vertical = 16.dp)) {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
+    Column(
+        modifier = Modifier.padding(
+            horizontal = PreferenceHorizontalPadding,
+            vertical = PreferenceItemVerticalPadding,
+        ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = PreferenceItemMinHeight - PreferenceItemVerticalPadding * 2),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
                 Box(
                     modifier = Modifier
                         .size(32.dp)
@@ -563,11 +587,9 @@ fun AppListItem(
                 Row(
                     modifier = Modifier
                         .horizontalScroll(rememberScrollState())
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        .padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Spacer(modifier = Modifier.width(6.dp))
-
                     SelectableChip(
                         selected = app.option.apk,
                         icon = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_resource_package),
@@ -595,9 +617,6 @@ fun AppListItem(
                         text = stringResource(R.string.additional_data),
                         onCheckedChange = { viewModel.selectAdditionalData(app.packageName, app.userId, it.not()) },
                     )
-
-                    Spacer(modifier = Modifier.width(6.dp))
-                }
             }
         }
     }
