@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -23,7 +25,8 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
@@ -46,17 +49,19 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.feature.BackupConfigRoute
 import com.xayah.databackup.feature.BackupDirectoryRoute
+import com.xayah.databackup.feature.BackupSetupRoute
+import com.xayah.databackup.feature.RestoreSettingsRoute
 import com.xayah.databackup.feature.UpdatesRoute
 import com.xayah.databackup.feature.update.UpdatesStatus
 import com.xayah.databackup.feature.update.UpdatesViewModel
 import com.xayah.databackup.ui.component.LocalFloatingNavigationBarBottomPadding
 import com.xayah.databackup.ui.component.SectionHeader
+import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.StorageCard
 import com.xayah.databackup.ui.component.fadeContentTransitionSpec
 import com.xayah.databackup.ui.component.rememberFadingEdgeState
@@ -75,6 +80,7 @@ private sealed interface DashboardBackupsUiState {
     data class Content(val backups: List<BackupConfig>) : DashboardBackupsUiState
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DashboardScreen(
     navigator: Navigator,
@@ -82,7 +88,7 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = koinViewModel(),
     updatesViewModel: UpdatesViewModel = koinViewModel(),
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val updatesUiState by updatesViewModel.uiState.collectAsStateWithLifecycle()
     val updateAvailable = updatesUiState.status == UpdatesStatus.UpdateAvailable
     val storageUiState = viewModel.storageUiState.collectAsStateWithLifecycle().value
@@ -111,22 +117,13 @@ fun DashboardScreen(
             .nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxSize(),
         topBar = {
-            CenterAlignedTopAppBar(
+            LargeTopAppBar(
                 title = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = stringResource(R.string.app_name),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = BuildConfig.VERSION_NAME,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.overlook),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 },
                 actions = {
                     IconButton(onClick = { navigator.navigateSafely(UpdatesRoute) }) {
@@ -180,6 +177,13 @@ fun DashboardScreen(
                 onClick = { navigator.navigateSafely(BackupDirectoryRoute) },
             )
 
+            DashboardQuickActions(
+                modifier = Modifier.fillMaxWidth(),
+                onBackupApps = { navigator.navigateSafely(BackupSetupRoute) },
+                onManageBackups = onShowBackups,
+                onRestoreSettings = { navigator.navigateSafely(RestoreSettingsRoute) },
+            )
+
             DashboardBackupsHeader(
                 modifier = Modifier.fillMaxWidth(),
                 showViewAll = backupsUiState is DashboardBackupsUiState.Content && backupsUiState.backups.size > 3,
@@ -199,7 +203,9 @@ fun DashboardScreen(
                         hasError = true,
                         onRetry = viewModel::retryLoadBackupConfigs,
                     )
-                    DashboardBackupsUiState.Empty -> DashboardBackupCard()
+                    DashboardBackupsUiState.Empty -> DashboardEmptyBackupsCard(
+                        onCreateBackup = { navigator.navigateSafely(BackupSetupRoute) },
+                    )
                     is DashboardBackupsUiState.Content -> {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             state.backups.take(3).forEachIndexed { index, backup ->
@@ -212,6 +218,90 @@ fun DashboardScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DashboardQuickActions(
+    modifier: Modifier = Modifier,
+    onBackupApps: () -> Unit,
+    onManageBackups: () -> Unit,
+    onRestoreSettings: () -> Unit,
+) {
+    SectionHeader(
+        modifier = modifier.padding(top = 8.dp),
+        title = stringResource(R.string.quick_actions),
+    )
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        maxItemsInEachRow = 2,
+    ) {
+        SmallActionButton(
+            modifier = Modifier.weight(1f),
+            icon = ImageVector.vectorResource(R.drawable.ic_archive),
+            title = stringResource(R.string.backup_apps),
+            subtitle = stringResource(R.string.new_backup),
+            onClick = onBackupApps,
+        )
+        SmallActionButton(
+            modifier = Modifier.weight(1f),
+            icon = ImageVector.vectorResource(R.drawable.ic_folder_archive),
+            title = stringResource(R.string.manage_backups),
+            subtitle = stringResource(R.string.see_your_previous_backups),
+            onClick = onManageBackups,
+        )
+        SmallActionButton(
+            modifier = Modifier.weight(1f),
+            icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
+            title = stringResource(R.string.restore),
+            subtitle = stringResource(R.string.restore_settings),
+            onClick = onRestoreSettings,
+        )
+    }
+}
+
+@Composable
+private fun DashboardEmptyBackupsCard(
+    modifier: Modifier = Modifier,
+    onCreateBackup: () -> Unit,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                DashboardBackupIcon(icon = ImageVector.vectorResource(R.drawable.ic_folder_archive))
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = stringResource(R.string.no_backups),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = stringResource(R.string.no_backups_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            FilledTonalButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onCreateBackup,
+            ) {
+                Text(text = stringResource(R.string.new_backup))
             }
         }
     }

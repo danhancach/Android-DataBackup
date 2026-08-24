@@ -26,6 +26,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -260,6 +261,7 @@ private fun BackupLibraryFilters(
     ) {
         BackupLibraryFilter.entries.forEach { filter ->
             FilterChip(
+                modifier = Modifier.wrapContentWidth(),
                 selected = selectedFilter == filter,
                 onClick = { onFilterChanged(filter) },
                 label = {

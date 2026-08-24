@@ -47,6 +47,8 @@ import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
@@ -95,6 +97,7 @@ fun FloatingNavigationBar(
     val selectedIndex = FloatingNavigationItems.indexOf(selectedItem)
     val isDark = MaterialTheme.colorScheme.background.luminance() < DARK_BACKGROUND_LUMINANCE_THRESHOLD
     val density = LocalDensity.current
+    val hapticFeedback = LocalHapticFeedback.current
     var navigationBarSize by remember { mutableStateOf(IntSize.Zero) }
     val rippleRadius = remember(navigationBarSize, density) {
         if (navigationBarSize == IntSize.Zero) {
@@ -167,7 +170,10 @@ fun FloatingNavigationBar(
                         item = item,
                         selected = selectedIndex == index,
                         indication = indication,
-                        onClick = { onSelected(item) },
+                        onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            onSelected(item)
+                        },
                     )
                 }
             }

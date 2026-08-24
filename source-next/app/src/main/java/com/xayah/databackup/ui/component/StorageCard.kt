@@ -13,6 +13,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -165,26 +168,28 @@ fun StorageCard(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.Top,
             ) {
                 LegendItem(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.wrapContentWidth(),
                     color = MaterialTheme.colorScheme.primary,
                     label = stringResource(R.string.backups),
                     tooltip = backupsTooltip,
                     enabled = legendEnabled,
                 )
                 LegendItem(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.wrapContentWidth(),
                     color = MaterialTheme.colorScheme.secondary,
                     label = stringResource(R.string.other),
                     tooltip = otherTooltip,
                     enabled = legendEnabled,
                 )
                 LegendItem(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.wrapContentWidth(),
                     color = MaterialTheme.colorScheme.outline,
                     label = stringResource(R.string.free),
                     tooltip = freeTooltip,
