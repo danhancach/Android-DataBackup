@@ -16,6 +16,9 @@ data object AboutRoute : NavKey
 data object TranslatorsRoute : NavKey
 
 @Serializable
+data object BackupLibraryRoute : NavKey
+
+@Serializable
 data object BackupSetupRoute : NavKey
 
 @Serializable

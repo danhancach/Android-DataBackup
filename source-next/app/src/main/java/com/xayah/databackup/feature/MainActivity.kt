@@ -5,11 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,6 +45,7 @@ import com.xayah.databackup.feature.about.AboutScreen
 import com.xayah.databackup.feature.about.TranslatorsScreen
 import com.xayah.databackup.feature.backup.BackupConfigScreen
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
+import com.xayah.databackup.feature.backup.BackupLibraryScreen
 import com.xayah.databackup.feature.backup.BackupProcessDetailsScreen
 import com.xayah.databackup.feature.backup.BackupProcessScreen
 import com.xayah.databackup.feature.backup.BackupSetupScreen
@@ -63,6 +59,9 @@ import com.xayah.databackup.feature.setup.NoPermKey
 import com.xayah.databackup.feature.setup.SetupActivity
 import com.xayah.databackup.feature.update.UpdatesScreen
 import com.xayah.databackup.ui.component.DataBackupDialog
+import com.xayah.databackup.ui.navigation.navForwardTransitionSpec
+import com.xayah.databackup.ui.navigation.navPopTransitionSpec
+import com.xayah.databackup.ui.navigation.navPredictivePopTransitionSpec
 import com.xayah.databackup.ui.component.DialogDestructiveButton
 import com.xayah.databackup.ui.component.DialogDismissButton
 import com.xayah.databackup.ui.component.DialogIcon
@@ -200,36 +199,16 @@ class MainActivity : ComponentActivity() {
                             rememberSaveableStateHolderNavEntryDecorator(),
                             rememberViewModelStoreNavEntryDecorator(),
                         ),
-                        transitionSpec = {
-                            slideInHorizontally(
-                                initialOffsetX = { it },
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
-                            ) togetherWith slideOutHorizontally(
-                                targetOffsetX = { -it },
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
-                            )
-                        },
-                        popTransitionSpec = {
-                            slideInHorizontally(
-                                initialOffsetX = { -it },
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
-                            ) togetherWith slideOutHorizontally(
-                                targetOffsetX = { it },
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
-                            )
-                        },
-                        predictivePopTransitionSpec = {
-                            slideInHorizontally(
-                                initialOffsetX = { -it },
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
-                            ) togetherWith slideOutHorizontally(
-                                targetOffsetX = { it },
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
-                            )
-                        },
+                        transitionSpec = navForwardTransitionSpec(),
+                        popTransitionSpec = navPopTransitionSpec(),
+                        predictivePopTransitionSpec = navPredictivePopTransitionSpec(),
                         entryProvider = entryProvider {
                             entry<MainNavigationRoute> {
-                                MainNavigationHost(navigator)
+                                val isTopDestination = backStack.lastOrNull() is MainNavigationRoute
+                                MainNavigationHost(
+                                    navigator = navigator,
+                                    enableTabBackHandler = isTopDestination,
+                                )
                             }
 
                             entry<UpdatesRoute> {
@@ -246,6 +225,10 @@ class MainActivity : ComponentActivity() {
 
                             entry<BackupSetupRoute> {
                                 BackupSetupScreen(navigator)
+                            }
+
+                            entry<BackupLibraryRoute> {
+                                BackupLibraryScreen(navigator)
                             }
 
                             entry<BackupProcessRoute> {

@@ -4,11 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -16,6 +11,9 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.xayah.databackup.ui.navigation.navForwardTransitionSpec
+import com.xayah.databackup.ui.navigation.navPopTransitionSpec
+import com.xayah.databackup.ui.navigation.navPredictivePopTransitionSpec
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.NotificationHelper
@@ -50,30 +48,9 @@ class SetupActivity : ComponentActivity() {
                     NavDisplay(
                         backStack = backStack,
                         onBack = navigator::goBack,
-                        transitionSpec = {
-                            slideInHorizontally(
-                                initialOffsetX = { it },
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessLow),
-                            ) togetherWith fadeOut(
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessLow),
-                            )
-                        },
-                        popTransitionSpec = {
-                            slideInHorizontally(
-                                initialOffsetX = { -it },
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessLow),
-                            ) togetherWith fadeOut(
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessLow),
-                            )
-                        },
-                        predictivePopTransitionSpec = {
-                            slideInHorizontally(
-                                initialOffsetX = { -it },
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessLow),
-                            ) togetherWith fadeOut(
-                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessLow),
-                            )
-                        },
+                        transitionSpec = navForwardTransitionSpec(),
+                        popTransitionSpec = navPopTransitionSpec(),
+                        predictivePopTransitionSpec = navPredictivePopTransitionSpec(),
                         entryProvider = entryProvider {
                             entry<Welcome> { WelcomeScreen(navigator) }
                             entry<Permissions> { permissions ->
