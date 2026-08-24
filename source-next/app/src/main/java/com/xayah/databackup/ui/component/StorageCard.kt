@@ -13,8 +13,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +23,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -92,6 +89,8 @@ fun StorageCard(
     val freeTooltip = remember(freeBytes, free, totalBytes) {
         formatLegendTooltip(freeBytes, free, totalBytes)
     }
+    val loadingLabel = stringResource(R.string.loading)
+    val calculatingLabel = stringResource(R.string.calculating)
 
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
@@ -111,7 +110,7 @@ fun StorageCard(
                     modifier = Modifier.fillMaxWidth(0.5f),
                     isLoading = isLoading,
                     content = title,
-                    loading = "    ",
+                    loading = loadingLabel,
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     shimmerColorAlpha = StorageCardShimmerColorAlpha,
@@ -121,7 +120,7 @@ fun StorageCard(
                     modifier = Modifier.fillMaxWidth(),
                     isLoading = isLoading,
                     content = subtitle,
-                    loading = " ",
+                    loading = stringResource(R.string.backup_dir),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -135,7 +134,7 @@ fun StorageCard(
                 modifier = Modifier.fillMaxWidth(),
                 isLoading = isLoading,
                 content = storage,
-                loading = " ",
+                loading = calculatingLabel,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
@@ -168,28 +167,26 @@ fun StorageCard(
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.Top,
             ) {
                 LegendItem(
-                    modifier = Modifier.wrapContentWidth(),
+                    modifier = Modifier.weight(1f),
                     color = MaterialTheme.colorScheme.primary,
                     label = stringResource(R.string.backups),
                     tooltip = backupsTooltip,
                     enabled = legendEnabled,
                 )
                 LegendItem(
-                    modifier = Modifier.wrapContentWidth(),
+                    modifier = Modifier.weight(1f),
                     color = MaterialTheme.colorScheme.secondary,
                     label = stringResource(R.string.other),
                     tooltip = otherTooltip,
                     enabled = legendEnabled,
                 )
                 LegendItem(
-                    modifier = Modifier.wrapContentWidth(),
+                    modifier = Modifier.weight(1f),
                     color = MaterialTheme.colorScheme.outline,
                     label = stringResource(R.string.free),
                     tooltip = freeTooltip,
@@ -355,9 +352,11 @@ private fun LegendItem(modifier: Modifier, color: Color, label: String, tooltip:
                 color = MaterialTheme.colorScheme.surfaceContainerHighest,
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     Surface(
                         modifier = Modifier.size(6.dp),
@@ -371,6 +370,7 @@ private fun LegendItem(modifier: Modifier, color: Color, label: String, tooltip:
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        softWrap = false,
                     )
                 }
             }

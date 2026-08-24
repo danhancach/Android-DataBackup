@@ -122,8 +122,13 @@ fun ScheduleScreen(
                 .verticalFadingEdges(fadingEdgeState)
                 .verticalScroll(scrollState),
         ) {
-            SectionHeader(title = stringResource(R.string.configure_automatic_backups))
-            PreferenceGroup {
+            SectionHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                title = stringResource(R.string.configure_automatic_backups),
+            )
+            PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
                 SwitchablePreference(
                     enabled = uiState.isLoaded,
                     checked = uiState.schedule.enabled,

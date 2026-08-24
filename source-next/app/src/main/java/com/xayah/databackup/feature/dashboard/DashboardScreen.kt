@@ -230,37 +230,39 @@ private fun DashboardQuickActions(
     onManageBackups: () -> Unit,
     onRestoreSettings: () -> Unit,
 ) {
-    SectionHeader(
-        modifier = modifier.padding(top = 8.dp),
-        title = stringResource(R.string.quick_actions),
-    )
-    FlowRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        maxItemsInEachRow = 2,
-    ) {
-        SmallActionButton(
-            modifier = Modifier.weight(1f),
-            icon = ImageVector.vectorResource(R.drawable.ic_archive),
-            title = stringResource(R.string.backup_apps),
-            subtitle = stringResource(R.string.new_backup),
-            onClick = onBackupApps,
+    Column(modifier = modifier) {
+        SectionHeader(
+            modifier = Modifier.padding(vertical = 16.dp),
+            title = stringResource(R.string.quick_actions),
         )
-        SmallActionButton(
-            modifier = Modifier.weight(1f),
-            icon = ImageVector.vectorResource(R.drawable.ic_folder_archive),
-            title = stringResource(R.string.manage_backups),
-            subtitle = stringResource(R.string.see_your_previous_backups),
-            onClick = onManageBackups,
-        )
-        SmallActionButton(
-            modifier = Modifier.weight(1f),
-            icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
-            title = stringResource(R.string.restore),
-            subtitle = stringResource(R.string.restore_settings),
-            onClick = onRestoreSettings,
-        )
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            maxItemsInEachRow = 2,
+        ) {
+            SmallActionButton(
+                modifier = Modifier.weight(1f),
+                icon = ImageVector.vectorResource(R.drawable.ic_archive),
+                title = stringResource(R.string.backup_apps),
+                subtitle = stringResource(R.string.new_backup),
+                onClick = onBackupApps,
+            )
+            SmallActionButton(
+                modifier = Modifier.weight(1f),
+                icon = ImageVector.vectorResource(R.drawable.ic_folder_archive),
+                title = stringResource(R.string.manage_backups),
+                subtitle = stringResource(R.string.see_your_previous_backups),
+                onClick = onManageBackups,
+            )
+            SmallActionButton(
+                modifier = Modifier.weight(1f),
+                icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
+                title = stringResource(R.string.restore),
+                subtitle = stringResource(R.string.restore_settings),
+                onClick = onRestoreSettings,
+            )
+        }
     }
 }
 
