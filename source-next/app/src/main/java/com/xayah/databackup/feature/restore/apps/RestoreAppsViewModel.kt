@@ -29,4 +29,6 @@ open class RestoreAppsViewModel(
             restoreRepo.selectAll(selected)
         }
     }
+
+    fun getSourcePath(): String = restoreRepo.getSourcePath()
 }
