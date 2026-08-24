@@ -95,7 +95,7 @@ fun ProcessItemCard(
                 modifier = Modifier.size(20.dp),
                 tint = MaterialTheme.colorScheme.primary,
                 imageVector = icon,
-                contentDescription = "Localized description"
+                contentDescription = null
             )
             Column(
                 modifier = Modifier

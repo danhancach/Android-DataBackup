@@ -40,6 +40,7 @@
     <string name="unsupported_format">Unsupported format</string>
     <string name="backup_dir">Backup directory</string>
     <string name="external_storage">External storage</string>
+    <string name="external_storage_volume">External storage (%1$s)</string>
     <string name="directory_structure">Directory structure</string>
     <string name="copy">Copy</string>
     <string name="save">Save</string>

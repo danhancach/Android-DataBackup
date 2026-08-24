@@ -278,7 +278,7 @@ fun NetworkListItem(
                 modifier = Modifier.size(20.dp),
                 tint = MaterialTheme.colorScheme.primary,
                 imageVector = if (network.preSharedKey == null) ImageVector.vectorResource(R.drawable.ic_wifi_open) else ImageVector.vectorResource(R.drawable.ic_wifi_password),
-                contentDescription = "Localized description"
+                contentDescription = null
             )
             Column(
                 modifier = Modifier

@@ -95,6 +95,7 @@ fun ScheduleScreen(
     } else {
         stringResource(R.string.schedule_no_backup_selected)
     }
+    val scheduleConfigured = uiState.isLoaded && uiState.schedule.enabled
 
     Scaffold(
         modifier = Modifier
@@ -132,14 +133,14 @@ fun ScheduleScreen(
                     onCheckedChange = viewModel::setEnabled,
                 )
                 Preference(
-                    enabled = uiState.isLoaded,
+                    enabled = scheduleConfigured,
                     icon = ImageVector.vectorResource(R.drawable.ic_clock),
                     title = stringResource(R.string.schedule_time),
                     subtitle = timeLabel,
                     onClick = { openTimeDialog = true },
                 )
                 Preference(
-                    enabled = uiState.isLoaded,
+                    enabled = scheduleConfigured,
                     icon = ImageVector.vectorResource(R.drawable.ic_archive),
                     title = stringResource(R.string.schedule_backup_target),
                     subtitle = backupTargetSubtitle,

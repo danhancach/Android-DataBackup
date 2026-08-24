@@ -35,6 +35,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,7 +51,10 @@ import com.xayah.databackup.R
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.feature.BackupConfigRoute
+import com.xayah.databackup.feature.BackupDirectoryRoute
 import com.xayah.databackup.feature.UpdatesRoute
+import com.xayah.databackup.feature.update.UpdatesStatus
+import com.xayah.databackup.feature.update.UpdatesViewModel
 import com.xayah.databackup.ui.component.LocalFloatingNavigationBarBottomPadding
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.StorageCard
@@ -76,8 +80,11 @@ fun DashboardScreen(
     navigator: Navigator,
     onShowBackups: () -> Unit,
     viewModel: DashboardViewModel = koinViewModel(),
+    updatesViewModel: UpdatesViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val updatesUiState by updatesViewModel.uiState.collectAsStateWithLifecycle()
+    val updateAvailable = updatesUiState.status == UpdatesStatus.UpdateAvailable
     val storageUiState = viewModel.storageUiState.collectAsStateWithLifecycle().value
     val backupConfigs = viewModel.backupConfigs.collectAsStateWithLifecycle().value
     val backupsLoadState = viewModel.backupsLoadState.collectAsStateWithLifecycle().value
@@ -93,6 +100,10 @@ fun DashboardScreen(
 
     LaunchedEffect(context = Dispatchers.IO, null) {
         viewModel.initialize()
+    }
+
+    LaunchedEffect(context = Dispatchers.IO, Unit) {
+        updatesViewModel.initialize()
     }
 
     Scaffold(
@@ -121,7 +132,9 @@ fun DashboardScreen(
                     IconButton(onClick = { navigator.navigateSafely(UpdatesRoute) }) {
                         BadgedBox(
                             badge = {
-                                Badge()
+                                if (updateAvailable) {
+                                    Badge()
+                                }
                             }
                         ) {
                             Icon(
@@ -161,10 +174,10 @@ fun DashboardScreen(
                 backupsBytes = storageUiState.backupsBytes,
                 totalBytes = storageUiState.totalBytes,
                 isLoading = storageUiState.isLoading,
-                title = stringResource(R.string.internal_storage),
-                subtitle = storageUiState.subtitle,
+                title = storageUiState.locationTitle,
+                subtitle = storageUiState.locationSubtitle,
                 storage = storageUiState.storage,
-                onClick = {},
+                onClick = { navigator.navigateSafely(BackupDirectoryRoute) },
             )
 
             DashboardBackupsHeader(

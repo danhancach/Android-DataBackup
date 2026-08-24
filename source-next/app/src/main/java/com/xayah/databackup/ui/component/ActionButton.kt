@@ -89,7 +89,7 @@ fun SmallActionButton(
                     modifier = Modifier.size(20.dp),
                     tint = animatedIconColor,
                     imageVector = icon,
-                    contentDescription = "Localized description"
+                    contentDescription = null
                 )
                 Text(
                     modifier = Modifier
@@ -173,7 +173,7 @@ fun ActionButton(modifier: Modifier, icon: ImageVector, title: String, subtitle:
                 modifier = Modifier.size(20.dp),
                 tint = MaterialTheme.colorScheme.primary,
                 imageVector = icon,
-                contentDescription = "Localized description"
+                contentDescription = null
             )
             Column(modifier = Modifier.padding(start = 16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(text = title, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurface)
