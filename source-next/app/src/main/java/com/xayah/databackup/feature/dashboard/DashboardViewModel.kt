@@ -56,7 +56,13 @@ class DashboardViewModel(
     val backupsLoadState: StateFlow<DashboardBackupsLoadState> = _backupsLoadState.asStateFlow()
     val backupConfigs = backupConfigRepository.configs
 
+    private var hasInitialized = false
+
     fun initialize() {
+        if (hasInitialized) {
+            return
+        }
+        hasInitialized = true
         withLock(Dispatchers.IO) {
             loadBackupConfigs()
             loadStorageStats()
@@ -137,6 +143,10 @@ class DashboardViewModel(
     }
 
     private suspend fun loadBackupConfigs() {
+        if (backupConfigRepository.isLoaded.value) {
+            _backupsLoadState.value = DashboardBackupsLoadState.Loaded
+            return
+        }
         _backupsLoadState.value = DashboardBackupsLoadState.Loading
         runCatching {
             backupConfigRepository.loadBackupConfigsFromLocal()

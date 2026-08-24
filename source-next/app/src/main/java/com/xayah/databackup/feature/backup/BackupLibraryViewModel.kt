@@ -73,7 +73,13 @@ class BackupLibraryViewModel(
                 ?: BackupLibraryUiState.Loading,
         )
 
+    private var hasInitialized = false
+
     fun initialize() {
+        if (hasInitialized) {
+            return
+        }
+        hasInitialized = true
         withLock(Dispatchers.IO) {
             backupConfigRepository.loadBackupConfigsFromLocal()
             isLoading.value = false

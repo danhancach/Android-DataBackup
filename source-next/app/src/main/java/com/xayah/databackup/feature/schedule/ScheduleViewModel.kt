@@ -46,7 +46,13 @@ class ScheduleViewModel(
         initialValue = ScheduleUiState(),
     )
 
+    private var hasRefreshed = false
+
     fun refresh() {
+        if (hasRefreshed) {
+            return
+        }
+        hasRefreshed = true
         withLock(Dispatchers.IO) {
             backupConfigRepository.loadBackupConfigsFromLocal()
             val config = backupConfigRepository.getCurrentConfig()

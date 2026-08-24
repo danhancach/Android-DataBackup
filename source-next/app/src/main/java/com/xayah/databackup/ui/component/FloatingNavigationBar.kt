@@ -40,14 +40,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -65,15 +61,14 @@ private val FloatingNavigationItemMinHeight = 56.dp
 private val FloatingNavigationBarPadding = 4.dp
 private val FloatingNavigationBarHorizontalInsets = FloatingNavigationBarPadding * 2
 private val FloatingNavigationLabelHorizontalPadding = FloatingNavigationBarPadding * 2
-private val FloatingNavigationShadowRadius = 16.dp
+private val FloatingNavigationShadowElevation = 6.dp
 private val FloatingNavigationFocusBorderWidth = 2.dp
 private val FloatingNavigationItemSpacing = 1.dp
 
 val LocalFloatingNavigationBarBottomPadding = staticCompositionLocalOf { 0.dp }
 
-private const val DARK_BACKGROUND_LUMINANCE_THRESHOLD = 0.5f
-private const val DARK_SHADOW_ALPHA = 0.14f
-private const val LIGHT_SHADOW_ALPHA = 0.07f
+val LocalTabTransitionInProgress = staticCompositionLocalOf { false }
+
 private const val SELECTED_INDICATOR_ALPHA = 0.15f
 private const val HOVER_INDICATOR_ALPHA = 0.08f
 private const val INDICATOR_SPRING_STIFFNESS = 1_000f
@@ -95,7 +90,6 @@ fun FloatingNavigationBar(
     modifier: Modifier = Modifier,
 ) {
     val selectedIndex = FloatingNavigationItems.indexOf(selectedItem)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < DARK_BACKGROUND_LUMINANCE_THRESHOLD
     val density = LocalDensity.current
     val hapticFeedback = LocalHapticFeedback.current
     var navigationBarSize by remember { mutableStateOf(IntSize.Zero) }
@@ -122,18 +116,11 @@ fun FloatingNavigationBar(
         modifier = modifier
             .widthIn(max = FloatingNavigationBarMaxWidth)
             .fillMaxWidth()
-            .onSizeChanged { navigationBarSize = it }
-            .dropShadow(
-                shape = CircleShape,
-                shadow = Shadow(
-                    radius = FloatingNavigationShadowRadius,
-                    color = Color.Black,
-                    alpha = if (isDark) DARK_SHADOW_ALPHA else LIGHT_SHADOW_ALPHA,
-                ),
-            ),
+            .onSizeChanged { navigationBarSize = it },
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainer,
         contentColor = MaterialTheme.colorScheme.onSurface,
+        shadowElevation = FloatingNavigationShadowElevation,
     ) {
         BoxWithConstraints(
             modifier = Modifier.fillMaxWidth(),

@@ -59,11 +59,16 @@ fun SettingsScreen(navigator: Navigator) {
     val unknown = stringResource(R.string.unknown)
     var rootSummary by remember(unknown) { mutableStateOf(unknown) }
     var rootSummaryLoading by remember { mutableStateOf(true) }
+    var rootSummaryLoaded by remember { mutableStateOf(false) }
 
-    LaunchedEffect(context = Dispatchers.IO, unknown) {
+    LaunchedEffect(context = Dispatchers.IO, rootSummaryLoaded) {
+        if (rootSummaryLoaded) {
+            return@LaunchedEffect
+        }
         rootSummaryLoading = true
         rootSummary = ShellHelper.getSuVersion() ?: unknown
         rootSummaryLoading = false
+        rootSummaryLoaded = true
     }
 
     if (openCustomSUFileDialog) {

@@ -58,9 +58,9 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 
 private const val InTransitionDuration = 120
-private const val OutTransitionDuration = 75
+private const val OutTransitionDuration = 90
 private const val ExpandedScaleTarget = 1f
-private const val ClosedScaleTarget = 0.8f
+private const val ClosedScaleTarget = 0.96f
 private const val ExpandedAlphaTarget = 1f
 private const val ClosedAlphaTarget = 0f
 

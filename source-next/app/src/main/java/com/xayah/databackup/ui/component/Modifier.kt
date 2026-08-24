@@ -91,6 +91,18 @@ private fun Modifier.fadingEdges(
     direction: Direction,
     scrollState: ScrollState,
     fadingEdge: Dp,
+): Modifier = composed {
+    if (LocalTabTransitionInProgress.current) {
+        this
+    } else {
+        fadingEdgesOffscreen(direction, scrollState, fadingEdge)
+    }
+}
+
+private fun Modifier.fadingEdgesOffscreen(
+    direction: Direction,
+    scrollState: ScrollState,
+    fadingEdge: Dp,
 ): Modifier = this.then(
     Modifier
         .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
@@ -145,6 +157,19 @@ private fun Modifier.fadingEdges(
 )
 
 private fun Modifier.fadingEdges(
+    direction: Direction,
+    startRange: Float,
+    endRange: Float,
+    fadingEdge: Dp,
+): Modifier = composed {
+    if (LocalTabTransitionInProgress.current) {
+        this
+    } else {
+        fadingEdgesOffscreen(direction, startRange, endRange, fadingEdge)
+    }
+}
+
+private fun Modifier.fadingEdgesOffscreen(
     direction: Direction,
     startRange: Float,
     endRange: Float,

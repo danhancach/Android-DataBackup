@@ -16,7 +16,7 @@ import androidx.navigationevent.NavigationEvent
 
 private val navSpringSpec = spring<IntOffset>(
     dampingRatio = Spring.DampingRatioNoBouncy,
-    stiffness = Spring.StiffnessMediumLow,
+    stiffness = Spring.StiffnessMedium,
 )
 
 fun navForwardTransitionSpec(): AnimatedContentTransitionScope<Scene<NavKey>>.() -> ContentTransform = {
