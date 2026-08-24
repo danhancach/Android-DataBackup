@@ -54,3 +54,15 @@ data object DataMigrationRoute : NavKey
 
 @Serializable
 data object AdvancedSettingsRoute : NavKey
+
+@Serializable
+data object AppearanceSettingsRoute : NavKey
+
+@Serializable
+data object BackupSettingsRoute : NavKey
+
+@Serializable
+data object BackupDirectoryRoute : NavKey
+
+@Serializable
+data object RestoreSettingsRoute : NavKey

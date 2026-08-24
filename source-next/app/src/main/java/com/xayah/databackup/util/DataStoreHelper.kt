@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
@@ -27,6 +28,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 suspend fun Context.preloadingDataStore() = dataStore.data.first()
 
 fun Context.readString(pair: Pair<Preferences.Key<String>, String>) = dataStore.data.map { preferences -> preferences[pair.first] ?: pair.second }
+fun Context.readThemeType() = readString(ThemeTypeSetting).map { ThemeType.fromStored(it) }
 inline fun <reified T : Enum<T>> Context.readEnum(pair: Pair<Preferences.Key<String>, T>) =
     dataStore.data.map { preferences -> enumValueOf<T>(preferences[pair.first] ?: pair.second.name) }
 fun Context.readBoolean(pair: Pair<Preferences.Key<Boolean>, Boolean>) = dataStore.data.map { preferences -> preferences[pair.first] ?: pair.second }
@@ -34,6 +36,7 @@ fun Context.readInt(pair: Pair<Preferences.Key<Int>, Int>) = dataStore.data.map 
 fun Context.readLong(pair: Pair<Preferences.Key<Long>, Long>) = dataStore.data.map { preferences -> preferences[pair.first] ?: pair.second }
 
 suspend fun Context.saveString(key: Preferences.Key<String>, value: String) = dataStore.edit { settings -> settings[key] = value }
+suspend fun Context.saveThemeType(value: ThemeType) = saveString(KeyThemeType, value.name)
 suspend inline fun <reified T : Enum<T>> Context.saveEnum(key: Preferences.Key<String>, value: T) =
     dataStore.edit { settings -> settings[key] = value.name }
 suspend fun Context.saveBoolean(key: Preferences.Key<Boolean>, value: Boolean) = dataStore.edit { settings -> settings[key] = value }
@@ -45,6 +48,9 @@ suspend fun Context.saveLong(key: Preferences.Key<Long>, value: Long) = dataStor
 // Key to defValue
 val KeyBackupPath = stringPreferencesKey("backup_path")
 val BackupPath = Pair(KeyBackupPath, PathHelper.DEFAULT_BACKUP_PATH)
+
+val KeyThemeType = stringPreferencesKey("theme_type")
+val ThemeTypeSetting = Pair(KeyThemeType, ThemeType.AUTO.name)
 
 val KeyFirstLaunch = booleanPreferencesKey("first_launch")
 const val DefFirstLaunch = true
@@ -90,6 +96,22 @@ val KeyResetBackupList = booleanPreferencesKey("reset_backup_list")
 const val DefResetBackupList = false
 val ResetBackupList = Pair(KeyResetBackupList, DefResetBackupList)
 
+val KeyDynamicColor = booleanPreferencesKey("dynamic_color")
+const val DefDynamicColor = true
+val DynamicColor = Pair(KeyDynamicColor, DefDynamicColor)
+
+val KeyCleanRestoring = booleanPreferencesKey("clean_restoring")
+const val DefCleanRestoring = false
+val CleanRestoring = Pair(KeyCleanRestoring, DefCleanRestoring)
+
+val KeyRestorePermissions = booleanPreferencesKey("restore_permissions")
+const val DefRestorePermissions = true
+val RestorePermissions = Pair(KeyRestorePermissions, DefRestorePermissions)
+
+val KeyRestoreSsaid = booleanPreferencesKey("restore_ssaid")
+const val DefRestoreSsaid = true
+val RestoreSsaid = Pair(KeyRestoreSsaid, DefRestoreSsaid)
+
 // ----------------------------------------------------------------------------------------------------------------------------Backup
 
 val KeyAppsOptionSelectedBackup = booleanPreferencesKey("apps_option_selected_backup")
@@ -115,3 +137,21 @@ val MessagesOptionSelectedBackup = Pair(KeyMessagesOptionSelectedBackup, DefMess
 val KeyBackupConfigSelectedUuid = stringPreferencesKey("backup_config_selected_uuid")
 const val DefBackupConfigSelectedUuid = ""
 val BackupConfigSelectedUuid = Pair(KeyBackupConfigSelectedUuid, DefBackupConfigSelectedUuid)
+
+// ----------------------------------------------------------------------------------------------------------------------------Schedule
+
+val KeyScheduleEnabled = booleanPreferencesKey("schedule_enabled")
+const val DefScheduleEnabled = false
+val ScheduleEnabled = Pair(KeyScheduleEnabled, DefScheduleEnabled)
+
+val KeyScheduleHour = intPreferencesKey("schedule_hour")
+const val DefScheduleHour = 2
+val ScheduleHour = Pair(KeyScheduleHour, DefScheduleHour)
+
+val KeyScheduleMinute = intPreferencesKey("schedule_minute")
+const val DefScheduleMinute = 0
+val ScheduleMinute = Pair(KeyScheduleMinute, DefScheduleMinute)
+
+val KeyScheduleLastRunAt = longPreferencesKey("schedule_last_run_at")
+const val DefScheduleLastRunAt = 0L
+val ScheduleLastRunAt = Pair(KeyScheduleLastRunAt, DefScheduleLastRunAt)

@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
@@ -47,6 +48,12 @@ fun Preference(
     subtitle: String,
     subtitleShimmer: Boolean = false,
     subtitleIcon: ImageVector? = null,
+    titleMaxLines: Int = 1,
+    titleOverflow: TextOverflow = TextOverflow.Ellipsis,
+    titleFontFamily: FontFamily? = null,
+    subtitleMaxLines: Int = Int.MAX_VALUE,
+    subtitleOverflow: TextOverflow = TextOverflow.Clip,
+    subtitleFontFamily: FontFamily? = null,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     slot: @Composable (RowScope.() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
@@ -78,11 +85,17 @@ fun Preference(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = if (titleMaxLines == 1 && subtitleMaxLines == 1) {
+                Alignment.CenterVertically
+            } else {
+                Alignment.Top
+            },
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Icon(
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier
+                    .size(20.dp)
+                    .align(if (titleMaxLines == 1 && subtitleMaxLines == 1) Alignment.CenterVertically else Alignment.Top),
                 tint = animatedIconColor,
                 imageVector = icon,
                 contentDescription = null
@@ -94,39 +107,46 @@ fun Preference(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = animatedTitleColor
+                    fontFamily = titleFontFamily,
+                    maxLines = titleMaxLines,
+                    overflow = titleOverflow,
+                    color = animatedTitleColor,
                 )
-                if (subtitleIcon == null) {
-                    Text(
-                        modifier = Modifier.shimmer(subtitleShimmer),
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = animatedSubtitleColor
-                    )
-                } else {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .shimmer(subtitleShimmer),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(16.dp),
-                            imageVector = subtitleIcon,
-                            contentDescription = null,
-                            tint = animatedSubtitleColor,
-                        )
+                if (subtitle.isNotBlank()) {
+                    if (subtitleIcon == null) {
                         Text(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.shimmer(subtitleShimmer),
                             text = subtitle,
                             style = MaterialTheme.typography.bodySmall,
+                            fontFamily = subtitleFontFamily,
+                            maxLines = subtitleMaxLines,
+                            overflow = subtitleOverflow,
                             color = animatedSubtitleColor,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
                         )
+                    } else {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .shimmer(subtitleShimmer),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(16.dp),
+                                imageVector = subtitleIcon,
+                                contentDescription = null,
+                                tint = animatedSubtitleColor,
+                            )
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                text = subtitle,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = subtitleFontFamily,
+                                color = animatedSubtitleColor,
+                                maxLines = subtitleMaxLines,
+                                overflow = subtitleOverflow,
+                            )
+                        }
                     }
                 }
             }

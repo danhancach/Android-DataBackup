@@ -16,11 +16,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.databackup.util.DefDynamicColor
+import com.xayah.databackup.util.DynamicColor
+import com.xayah.databackup.util.ThemeType
+import com.xayah.databackup.util.readBoolean
+import com.xayah.databackup.util.readThemeType
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -33,6 +41,11 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.migration.DataMigrationScreen
 import com.xayah.databackup.feature.settings.AdvancedSettingsScreen
+import com.xayah.databackup.feature.settings.AppearanceSettingsScreen
+import com.xayah.databackup.feature.settings.BackupDirectoryScreen
+import com.xayah.databackup.feature.settings.BackupDirectoryViewModel
+import com.xayah.databackup.feature.settings.BackupSettingsScreen
+import com.xayah.databackup.feature.settings.RestoreSettingsScreen
 import com.xayah.databackup.feature.about.AboutScreen
 import com.xayah.databackup.feature.about.TranslatorsScreen
 import com.xayah.databackup.feature.backup.BackupConfigScreen
@@ -143,7 +156,28 @@ class MainActivity : ComponentActivity() {
             mMainViewModel = viewModel()
             mMainViewModel.initialize()
 
-            DataBackupTheme {
+            val dynamicColor by App.application.readBoolean(DynamicColor)
+                .collectAsStateWithLifecycle(initialValue = DefDynamicColor)
+            val themeType by App.application.readThemeType()
+                .collectAsStateWithLifecycle(initialValue = ThemeType.AUTO)
+            val systemDarkTheme = isSystemInDarkTheme()
+            val darkTheme = when (themeType) {
+                ThemeType.AUTO -> systemDarkTheme
+                ThemeType.LIGHT -> false
+                ThemeType.DARK -> true
+            }
+
+            LaunchedEffect(themeType) {
+                AppCompatDelegate.setDefaultNightMode(
+                    when (themeType) {
+                        ThemeType.AUTO -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                        ThemeType.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                        ThemeType.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+                    },
+                )
+            }
+
+            DataBackupTheme(darkTheme = darkTheme, dynamicColor = dynamicColor) {
                 val uiState by mMainViewModel.uiState.collectAsStateWithLifecycle()
                 val backStack = rememberNavBackStack(MainNavigationRoute)
                 val navigator = remember(backStack) { Navigator(backStack) }
@@ -255,6 +289,22 @@ class MainActivity : ComponentActivity() {
 
                             entry<AdvancedSettingsRoute> {
                                 AdvancedSettingsScreen(navigator)
+                            }
+
+                            entry<AppearanceSettingsRoute> {
+                                AppearanceSettingsScreen(navigator)
+                            }
+
+                            entry<BackupSettingsRoute> {
+                                BackupSettingsScreen(navigator)
+                            }
+
+                            entry<BackupDirectoryRoute> {
+                                BackupDirectoryScreen(navigator)
+                            }
+
+                            entry<RestoreSettingsRoute> {
+                                RestoreSettingsScreen(navigator)
                             }
 
                             entry<DataMigrationRoute> {

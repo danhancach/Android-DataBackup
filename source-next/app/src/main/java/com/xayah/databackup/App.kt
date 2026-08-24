@@ -37,6 +37,7 @@ import com.xayah.databackup.feature.backup.networks.NetworksViewModel
 import com.xayah.databackup.feature.backup.rustic.RusticBackupProcessViewModel
 import com.xayah.databackup.data.migration.MigrationRepository
 import com.xayah.databackup.feature.migration.DataMigrationViewModel
+import com.xayah.databackup.feature.settings.BackupDirectoryViewModel
 import com.xayah.databackup.feature.update.UpdatesViewModel
 import com.xayah.databackup.service.util.BackupAppsHelper
 import com.xayah.databackup.service.util.BackupCallLogsHelper
@@ -83,6 +84,7 @@ class App : Application(), SingletonImageLoader.Factory {
 
         singleOf(::MigrationRepository)
         viewModelOf(::DataMigrationViewModel)
+        viewModelOf(::BackupDirectoryViewModel)
         viewModelOf(::DashboardViewModel)
         viewModelOf(::BackupSetupViewModel)
         viewModelOf(::BackupLibraryViewModel)
