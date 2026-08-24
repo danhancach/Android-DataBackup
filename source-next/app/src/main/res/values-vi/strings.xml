@@ -265,7 +265,7 @@
     <string name="advanced">Nâng cao</string>
     <string name="reload_desc">Tải lại bản sao lưu từ cục bộ (local) hoặc từ đám mây (cloud)</string>
     <string name="backed_up_apps">Các ứng dụng đã được sao lưu</string>
-    <string name="no_backups_found_warning">Không có bản sao lưu nào được tìm thấy, có thể bạn nên quay lại và trử tải lại</string>
+    <string name="no_backups_found_warning">Không tìm thấy bản sao lưu nào, hãy quay lại và thử tải lại</string>
     <string name="args_restore">Khôi phục %1$s</string>
     <string name="set_up_inst_env">Thiết lập môi trường cài đặt</string>
     <string name="load_system_apps">Tải các ứng dụng hệ thống</string>
@@ -355,7 +355,7 @@
     <string name="data_items">Các mục dữ liệu</string>
     <string name="unselect_all">Bỏ chọn tất cả</string>
     <string name="reverse_selection">Đảo ngược các lựa chọn</string>
-    <string name="for_selected">Về đã chọn…</string>
+    <string name="for_selected">Cho mục đã chọn…</string>
     <string name="block">Chặn</string>
     <string name="unblock">Gỡ chặn</string>
     <string name="detailed_data_items">Chi tiết mục dữ liệu</string>
@@ -537,4 +537,7 @@
     <string name="no_matching_backups">Không có bản sao lưu trùng khớp</string>
     <string name="no_matching_backups_desc">Vui lòng thử điều chỉnh tìm kiếm hoặc bộ lọc.</string>
     <string name="clear_filters">Xóa bộ lọc</string>
+    <string name="recent_backups">Sao lưu gần đây</string>
+    <string name="view_all">Xem tất cả</string>
+    <string name="afdian">AFDIAN</string>
 </resources>
