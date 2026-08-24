@@ -5,6 +5,7 @@ import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.databackup.App
 import com.xayah.databackup.util.SymbolHelper.USD
+import com.xayah.databackup.util.SymbolHelper.shellQuote
 import kotlinx.coroutines.flow.first
 
 object ShellHelper {
@@ -41,7 +42,7 @@ object ShellHelper {
         val shell = getNewShell(context)
         if (shell != null) {
             // ps -A | grep -w $key1 | grep -w $key2 | ... | awk 'NF>1{print $2}' | xargs kill
-            val keysArg = keys.map { "| grep -w $it" }.toTypedArray()
+            val keysArg = keys.map { "| grep -w ${shellQuote(it)}" }.toTypedArray()
             val args = mutableListOf<String>()
             args.add("ps")
             args.add("-A")
@@ -66,7 +67,7 @@ object ShellHelper {
     suspend fun rm(path: String) {
         val shell = getNewShell(App.application)
         if (shell != null) {
-            shell.newJob().to(null, null).add("rm $path").exec()
+            shell.newJob().to(null, null).add("rm -rf ${shellQuote(path)}").exec()
             shell.close()
         } else {
             LogHelper.e(TAG, "rm", "Failed to get a new shell!")

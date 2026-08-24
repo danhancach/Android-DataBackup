@@ -55,6 +55,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import java.io.File
 import java.io.FileInputStream
+import java.security.MessageDigest
 import java.io.FileOutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -303,8 +304,13 @@ object RemoteRootService {
             return runCatching { File(source).copyRecursively(File(target), overwrite) }.getOrNull() ?: false
         }
 
-        override fun initRusticRepository(repositoryPath: String, password: String) {
-            Rustic.initRepository(repositoryPath, password)
+        override fun initRusticRepository(
+            repositoryPath: String,
+            password: String,
+            optionKeys: Array<String>,
+            optionValues: Array<String>,
+        ) {
+            Rustic.initRepository(repositoryPath, password, optionKeys.toList(), optionValues.toList())
         }
 
         override fun rusticRepositoryExists(repositoryPath: String): Boolean {
@@ -320,9 +326,21 @@ object RemoteRootService {
             password: String,
             sourcePaths: List<String>,
             tags: List<String>,
-            callback: ICallback?
+            callback: ICallback?,
+            cancelId: Long,
+            optionKeys: Array<String>,
+            optionValues: Array<String>,
         ): String {
-            return Rustic.createSnapshot(repositoryPath, password, sourcePaths, tags, callback)
+            return Rustic.createSnapshot(
+                repositoryPath,
+                password,
+                sourcePaths,
+                tags,
+                callback,
+                cancelId,
+                optionKeys.toList(),
+                optionValues.toList(),
+            )
         }
 
         override fun restoreRusticSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
@@ -331,6 +349,21 @@ object RemoteRootService {
 
         override fun checkRusticRepository(repositoryPath: String, password: String) {
             Rustic.checkRepository(repositoryPath, password)
+        }
+
+        override fun calculateMD5(path: String): String {
+            return runCatching {
+                val digest = MessageDigest.getInstance("MD5")
+                FileInputStream(path).use { input ->
+                    val buffer = ByteArray(1024 * 1024)
+                    while (true) {
+                        val read = input.read(buffer)
+                        if (read == -1) break
+                        digest.update(buffer, 0, read)
+                    }
+                }
+                digest.digest().joinToString("") { byte -> "%02x".format(byte) }
+            }.getOrDefault("")
         }
     }
 
@@ -543,8 +576,14 @@ object RemoteRootService {
         return getService()?.copyRecursively(source, target, overwrite) ?: false
     }
 
-    suspend fun initRusticRepository(repositoryPath: String, password: String) {
-        getService()?.initRusticRepository(repositoryPath, password)
+    suspend fun initRusticRepository(
+        repositoryPath: String,
+        password: String,
+        options: Map<String, String> = emptyMap(),
+    ) {
+        val keys = options.keys.toTypedArray()
+        val values = options.values.toTypedArray()
+        getService()?.initRusticRepository(repositoryPath, password, keys, values)
     }
 
     suspend fun rusticRepositoryExists(repositoryPath: String): Boolean {
@@ -561,8 +600,16 @@ object RemoteRootService {
         sourcePaths: List<String>,
         tags: List<String> = emptyList(),
         callback: ICallback? = null,
+        cancelId: Long = 0L,
+        options: Map<String, String> = emptyMap(),
     ): String {
-        return getService()?.createRusticSnapshot(repositoryPath, password, sourcePaths, tags, callback) ?: ""
+        val keys = options.keys.toTypedArray()
+        val values = options.values.toTypedArray()
+        return getService()?.createRusticSnapshot(repositoryPath, password, sourcePaths, tags, callback, cancelId, keys, values) ?: ""
+    }
+
+    suspend fun cancelRusticBackup(cancelId: Long) {
+        Rustic.cancelBackup(cancelId)
     }
 
     suspend fun restoreRusticSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
@@ -571,5 +618,9 @@ object RemoteRootService {
 
     suspend fun checkRusticRepository(repositoryPath: String, password: String) {
         getService()?.checkRusticRepository(repositoryPath, password)
+    }
+
+    suspend fun calculateMD5(path: String): String? {
+        return getService()?.calculateMD5(path)?.takeIf { it.isNotBlank() }
     }
 }

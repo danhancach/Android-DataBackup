@@ -18,7 +18,7 @@ class RusticBackupCoordinator(
         private const val SNAPSHOT_CONFIG_TAG_PREFIX = "$SNAPSHOT_TAG:config:"
     }
 
-    suspend fun start(onEvent: (RusticBackupEvent) -> Unit): RusticBackupResult {
+    suspend fun start(cancelId: Long, onEvent: (RusticBackupEvent) -> Unit): RusticBackupResult {
         val selection = mSelectionProvider.getSelection()
         val backend = selection.config.backupBackend as? BackupBackend.Rustic ?: throw IllegalStateException("Current backup is not a Rustic backup.")
         val repositoryPath = PathHelper.getBackupRepoDir(selection.config.path)
@@ -27,7 +27,7 @@ class RusticBackupCoordinator(
 
         try {
             onEvent(RusticBackupEvent.StageChanged(RusticBackupStage.PrepareRepository))
-            mGateway.prepareRepository(repositoryPath, backend.password)
+            mGateway.prepareRepository(repositoryPath, backend.password, backend.storage)
 
             onEvent(RusticBackupEvent.StageChanged(RusticBackupStage.CollectSources))
             val collected = mSourceCollector.collect(selection, stagingPath, createdAt)
@@ -40,7 +40,9 @@ class RusticBackupCoordinator(
                 tags = listOf(
                     SNAPSHOT_TAG,
                     "$SNAPSHOT_CONFIG_TAG_PREFIX${selection.config.uuidString}",
-                )
+                ),
+                storage = backend.storage,
+                cancelId = cancelId,
             ) { bytesDone, speed, progress ->
                 onEvent(RusticBackupEvent.Progress(bytesDone, speed, progress))
             }.takeIf { it.isNotBlank() } ?: throw IllegalStateException("Rustic returned an empty snapshot ID.")

@@ -86,6 +86,8 @@ fun RusticBackupProcessScreen(
 
     val statusLabel = when (uiState.status) {
         RusticBackupProcessStatus.Processing -> stringResource(R.string.backing_up)
+        RusticBackupProcessStatus.Canceling -> stringResource(R.string.canceling)
+        RusticBackupProcessStatus.Canceled -> stringResource(R.string.cancel)
         RusticBackupProcessStatus.Finished -> stringResource(R.string.finished)
         RusticBackupProcessStatus.Failed -> stringResource(R.string.failed)
     }
@@ -125,6 +127,14 @@ fun RusticBackupProcessScreen(
                     }
                 },
                 actions = {
+                    if (uiState.canCancel) {
+                        IconButton(onClick = { viewModel.cancel() }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_circle_x),
+                                contentDescription = stringResource(R.string.cancel_backup),
+                            )
+                        }
+                    }
                     IconButton(onClick = { showRepositoryInfo = true }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info),

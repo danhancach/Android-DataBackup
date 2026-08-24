@@ -35,6 +35,7 @@ import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.ZstdHelper
 import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.formatToStorageSizePerSecond
+import com.xayah.databackup.service.util.ChecksumUtil
 import kotlinx.coroutines.CancellationException
 
 class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) {
@@ -83,11 +84,20 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
         }
     }
 
+    private fun appDirName(app: App): String = PathHelper.sanitizeAppDirName(app.info.label, app.packageName)
+
+    private suspend fun writeChecksumIfNeeded(outputPath: String, status: Int) {
+        if (status == STATUS_SUCCESS) {
+            ChecksumUtil.write(outputPath)
+        }
+    }
+
     private suspend fun packageAndCompressApk(app: App, onProgress: (bytesWritten: Long, speed: Long) -> Unit): Pair<Int, String> {
         var status = STATUS_SUCCESS
         var info = ""
         val backupConfig = mBackupProcessRepo.getBackupConfig()
-        val apkPath = PathHelper.getBackupAppsApkFilePath(backupConfig.path, app.packageName)
+        val appDir = appDirName(app)
+        val apkPath = PathHelper.getBackupAppsApkFilePath(backupConfig.path, appDir)
         val apkParentPath = PathHelper.getParentPath(apkPath)
         val apkList = RemoteRootService.getPackageSourceDir(app.packageName, app.userId)
 
@@ -125,6 +135,7 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
             status = it.first
             info = it.second
         }
+        writeChecksumIfNeeded(apkPath, status)
         return status to info
     }
 
@@ -169,50 +180,56 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
             status = it.first
             info = it.second
         }
+        writeChecksumIfNeeded(outputPath, status)
         return status to info
     }
 
     private suspend fun packageAndCompressUser(app: App, onProgress: (bytesWritten: Long, speed: Long) -> Unit): Pair<Int, String> {
         val backupConfig = mBackupProcessRepo.getBackupConfig()
+        val appDir = appDirName(app)
         return packageAndCompress(
             inputDir = PathHelper.getAppUserDir(app.userId, app.packageName),
-            outputPath = PathHelper.getBackupAppsUserFilePath(backupConfig.path, app.packageName),
+            outputPath = PathHelper.getBackupAppsUserFilePath(backupConfig.path, appDir),
             onProgress = onProgress,
         )
     }
 
     private suspend fun packageAndCompressUserDe(app: App, onProgress: (bytesWritten: Long, speed: Long) -> Unit): Pair<Int, String> {
         val backupConfig = mBackupProcessRepo.getBackupConfig()
+        val appDir = appDirName(app)
         return packageAndCompress(
             inputDir = PathHelper.getAppUserDeDir(app.userId, app.packageName),
-            outputPath = PathHelper.getBackupAppsUserDeFilePath(backupConfig.path, app.packageName),
+            outputPath = PathHelper.getBackupAppsUserDeFilePath(backupConfig.path, appDir),
             onProgress = onProgress,
         )
     }
 
     private suspend fun packageAndCompressData(app: App, onProgress: (bytesWritten: Long, speed: Long) -> Unit): Pair<Int, String> {
         val backupConfig = mBackupProcessRepo.getBackupConfig()
+        val appDir = appDirName(app)
         return packageAndCompress(
             inputDir = PathHelper.getAppDataDir(app.userId, app.packageName),
-            outputPath = PathHelper.getBackupAppsDataFilePath(backupConfig.path, app.packageName),
+            outputPath = PathHelper.getBackupAppsDataFilePath(backupConfig.path, appDir),
             onProgress = onProgress,
         )
     }
 
     private suspend fun packageAndCompressObb(app: App, onProgress: (bytesWritten: Long, speed: Long) -> Unit): Pair<Int, String> {
         val backupConfig = mBackupProcessRepo.getBackupConfig()
+        val appDir = appDirName(app)
         return packageAndCompress(
             inputDir = PathHelper.getAppObbDir(app.userId, app.packageName),
-            outputPath = PathHelper.getBackupAppsObbFilePath(backupConfig.path, app.packageName),
+            outputPath = PathHelper.getBackupAppsObbFilePath(backupConfig.path, appDir),
             onProgress = onProgress,
         )
     }
 
     private suspend fun packageAndCompressMedia(app: App, onProgress: (bytesWritten: Long, speed: Long) -> Unit): Pair<Int, String> {
         val backupConfig = mBackupProcessRepo.getBackupConfig()
+        val appDir = appDirName(app)
         return packageAndCompress(
             inputDir = PathHelper.getAppMediaDir(app.userId, app.packageName),
-            outputPath = PathHelper.getBackupAppsMediaFilePath(backupConfig.path, app.packageName),
+            outputPath = PathHelper.getBackupAppsMediaFilePath(backupConfig.path, appDir),
             onProgress = onProgress,
         )
     }

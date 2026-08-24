@@ -1,9 +1,12 @@
 package com.xayah.databackup.feature.backup
 
 import arrow.optics.copy
+import com.xayah.databackup.App
+import com.xayah.databackup.R
 import com.xayah.databackup.data.BackupConfigRepository
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
+import com.xayah.databackup.entity.S3CloudConfig
 import com.xayah.databackup.entity.backupBackend
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.LogHelper
@@ -34,21 +37,65 @@ class NewBackupViewModel(
     val backupBackend: StateFlow<BackupBackend> = _backupBackend.asStateFlow()
 
     fun selectBackupBackend(index: Int) {
-        val currentPassword =
-            (backupBackend.value as? BackupBackend.Rustic)?.password ?: BackupBackend.DEFAULT_PASSWORD
+        val currentRustic = backupBackend.value as? BackupBackend.Rustic
+        val currentPassword = currentRustic?.password ?: BackupBackend.DEFAULT_PASSWORD
+        val currentStorage = currentRustic?.storage ?: BackupBackend.RusticStorage()
         _backupBackend.value = when (index) {
             0 -> BackupBackend.Archive()
-            else -> BackupBackend.Rustic(password = currentPassword)
+            else -> BackupBackend.Rustic(password = currentPassword, storage = currentStorage)
         }
     }
 
+    fun toggleRusticCloud(enabled: Boolean) {
+        val current = backupBackend.value as? BackupBackend.Rustic ?: return
+        _backupBackend.value = if (enabled) {
+            val s3 = current.storage.s3 ?: emptyS3Draft()
+            current.copy(storage = BackupBackend.RusticStorage(type = BackupBackend.RusticStorage.TYPE_S3, s3 = s3))
+        } else {
+            current.copy(storage = BackupBackend.RusticStorage(type = BackupBackend.RusticStorage.TYPE_LOCAL))
+        }
+    }
+
+    fun configureRusticCloud(s3: S3CloudConfig) {
+        val current = backupBackend.value as? BackupBackend.Rustic ?: BackupBackend.Rustic()
+        _backupBackend.value = current.copy(
+            storage = BackupBackend.RusticStorage(type = BackupBackend.RusticStorage.TYPE_S3, s3 = s3),
+        )
+    }
+
+    fun validateBackupBackend(): String? {
+        val rustic = backupBackend.value as? BackupBackend.Rustic ?: return null
+        if (rustic.storage.isCloud.not()) return null
+        val s3 = rustic.storage.s3 ?: return App.application.getString(R.string.s3_validation_missing)
+        if (s3.isConfigured().not()) {
+            return App.application.getString(R.string.s3_validation_missing)
+        }
+        if (s3.allowInsecure.not() && s3.endpoint.startsWith("http://", ignoreCase = true)) {
+            return App.application.getString(R.string.s3_validation_http)
+        }
+        return null
+    }
+
+    private fun emptyS3Draft(): S3CloudConfig = S3CloudConfig(
+        endpoint = "",
+        bucket = "",
+        accessKey = "",
+        secretKey = "",
+    )
+
     fun changeRusticPassword(password: String) {
-        _backupBackend.value = BackupBackend.Rustic(password = password)
+        val storage = (backupBackend.value as? BackupBackend.Rustic)?.storage ?: BackupBackend.RusticStorage()
+        _backupBackend.value = BackupBackend.Rustic(password = password, storage = storage)
     }
 
     fun saveNewBackup(onSaved: () -> Unit) {
         withLock(Dispatchers.IO) {
             if (uiState.value.isSaving) return@withLock
+
+            validateBackupBackend()?.let { error ->
+                _uiState.value = NewBackupUiState(saveError = error)
+                return@withLock
+            }
 
             _uiState.value = NewBackupUiState(isSaving = true)
             try {

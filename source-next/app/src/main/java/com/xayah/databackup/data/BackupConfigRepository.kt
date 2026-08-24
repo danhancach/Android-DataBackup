@@ -121,6 +121,7 @@ class BackupConfigRepository(
                 rusticBackupGateway.prepareRepository(
                     repositoryPath = PathHelper.getBackupRepoDir(config.path),
                     password = backend.password,
+                    storage = backend.storage,
                 )
             }
 

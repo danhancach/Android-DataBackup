@@ -22,6 +22,7 @@ import com.xayah.databackup.data.rustic.RusticBackupGateway
 import com.xayah.databackup.data.rustic.RusticBackupSelectionProvider
 import com.xayah.databackup.data.rustic.RusticBackupSourceCollector
 import com.xayah.databackup.data.rustic.RusticStructuredDataSerializer
+import com.xayah.databackup.feature.dashboard.DashboardViewModel
 import com.xayah.databackup.feature.about.TranslatorsViewModel
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
 import com.xayah.databackup.feature.backup.BackupLibraryViewModel
@@ -34,7 +35,8 @@ import com.xayah.databackup.feature.backup.contacts.ContactsViewModel
 import com.xayah.databackup.feature.backup.messages.MessagesViewModel
 import com.xayah.databackup.feature.backup.networks.NetworksViewModel
 import com.xayah.databackup.feature.backup.rustic.RusticBackupProcessViewModel
-import com.xayah.databackup.feature.dashboard.DashboardViewModel
+import com.xayah.databackup.data.migration.MigrationRepository
+import com.xayah.databackup.feature.migration.DataMigrationViewModel
 import com.xayah.databackup.feature.update.UpdatesViewModel
 import com.xayah.databackup.service.util.BackupAppsHelper
 import com.xayah.databackup.service.util.BackupCallLogsHelper
@@ -79,6 +81,8 @@ class App : Application(), SingletonImageLoader.Factory {
         singleOf(::RusticBackupSourceCollector)
         singleOf(::RusticBackupCoordinator)
 
+        singleOf(::MigrationRepository)
+        viewModelOf(::DataMigrationViewModel)
         viewModelOf(::DashboardViewModel)
         viewModelOf(::BackupSetupViewModel)
         viewModelOf(::BackupLibraryViewModel)

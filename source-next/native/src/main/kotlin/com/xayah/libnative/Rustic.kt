@@ -3,8 +3,18 @@ package com.xayah.libnative
 object Rustic {
     fun initLogger() = nativeInitLogger()
 
-    fun initRepository(repositoryPath: String, password: String) {
-        nativeInitRepository(repositoryPath, password)
+    fun initRepository(
+        repositoryPath: String,
+        password: String,
+        optionKeys: List<String> = emptyList(),
+        optionValues: List<String> = emptyList(),
+    ) {
+        nativeInitRepository(
+            repositoryPath,
+            password,
+            optionKeys.toTypedArray(),
+            optionValues.toTypedArray(),
+        )
     }
 
     fun repositoryExists(repositoryPath: String): Boolean {
@@ -21,8 +31,24 @@ object Rustic {
         sourcePaths: List<String>,
         tags: List<String> = emptyList(),
         callback: Any? = null,
+        cancelId: Long = 0L,
+        optionKeys: List<String> = emptyList(),
+        optionValues: List<String> = emptyList(),
     ): String {
-        return nativeCreateSnapshot(repositoryPath, password, sourcePaths.toTypedArray(), tags.toTypedArray(), callback)
+        return nativeCreateSnapshot(
+            repositoryPath,
+            password,
+            sourcePaths.toTypedArray(),
+            tags.toTypedArray(),
+            callback,
+            cancelId,
+            optionKeys.toTypedArray(),
+            optionValues.toTypedArray(),
+        )
+    }
+
+    fun cancelBackup(cancelId: Long) {
+        nativeCancelBackup(cancelId)
     }
 
     fun restoreSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
@@ -34,7 +60,13 @@ object Rustic {
     }
 
     private external fun nativeInitLogger()
-    private external fun nativeInitRepository(repositoryPath: String, password: String)
+    private external fun nativeInitRepository(
+        repositoryPath: String,
+        password: String,
+        optionKeys: Array<String>,
+        optionValues: Array<String>,
+    )
+
     private external fun nativeRepositoryExists(repositoryPath: String): Boolean
     private external fun nativeValidateRepository(repositoryPath: String, password: String)
     private external fun nativeCreateSnapshot(
@@ -43,6 +75,9 @@ object Rustic {
         sourcePaths: Array<String>,
         tags: Array<String>,
         callback: Any?,
+        cancelId: Long,
+        optionKeys: Array<String>,
+        optionValues: Array<String>,
     ): String
 
     private external fun nativeRestoreSnapshot(
@@ -53,4 +88,5 @@ object Rustic {
     )
 
     private external fun nativeCheckRepository(repositoryPath: String, password: String)
+    private external fun nativeCancelBackup(cancelId: Long)
 }

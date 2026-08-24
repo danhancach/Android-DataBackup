@@ -31,6 +31,8 @@ import androidx.navigation3.ui.NavDisplay
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.feature.migration.DataMigrationScreen
+import com.xayah.databackup.feature.settings.AdvancedSettingsScreen
 import com.xayah.databackup.feature.about.AboutScreen
 import com.xayah.databackup.feature.about.TranslatorsScreen
 import com.xayah.databackup.feature.backup.BackupConfigScreen
@@ -249,6 +251,14 @@ class MainActivity : ComponentActivity() {
 
                             entry<BackupMessagesRoute> {
                                 BackupMessagesScreen(navigator)
+                            }
+
+                            entry<AdvancedSettingsRoute> {
+                                AdvancedSettingsScreen(navigator)
+                            }
+
+                            entry<DataMigrationRoute> {
+                                DataMigrationScreen(navigator)
                             }
                         }
                     )

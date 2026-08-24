@@ -15,10 +15,12 @@ import com.xayah.databackup.data.rustic.RusticBackupCoordinator
 import com.xayah.databackup.data.rustic.RusticBackupEvent
 import com.xayah.databackup.data.rustic.RusticBackupStage
 import com.xayah.databackup.entity.BackupBackend
+import com.xayah.databackup.data.rustic.RusticBackupGateway
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
+import com.xayah.databackup.util.ShellHelper
 import com.xayah.databackup.util.combine
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +37,7 @@ import kotlinx.coroutines.launch
 open class RusticBackupProcessViewModel(
     private val mBackupConfigRepo: BackupConfigRepository,
     private val mBackupCoordinator: RusticBackupCoordinator,
+    private val mRusticGateway: RusticBackupGateway,
     mAppRepo: AppRepository,
     mFileRepo: FileRepository,
     mNetworkRepo: NetworkRepository,
@@ -45,6 +48,10 @@ open class RusticBackupProcessViewModel(
     companion object {
         private const val TAG = "RusticBackupProcessViewModel"
     }
+
+    private val cancelId = System.currentTimeMillis()
+    @Volatile
+    private var isCancelRequested = false
 
     private val _uiState: MutableStateFlow<RusticBackupProcessUiState> = MutableStateFlow(RusticBackupProcessUiState())
     val uiState: StateFlow<RusticBackupProcessUiState> = _uiState.asStateFlow()
@@ -204,7 +211,7 @@ open class RusticBackupProcessViewModel(
                 }
             }
             try {
-                val result = mBackupCoordinator.start { event ->
+                val result = mBackupCoordinator.start(cancelId) { event ->
                     _uiState.update { state -> reduceRusticBackupState(state, event) }
                 }
                 _uiState.update {
@@ -215,9 +222,12 @@ open class RusticBackupProcessViewModel(
                     )
                 }
             } catch (error: CancellationException) {
-                // Cancellation should not be reported as a backup failure.
                 throw error
             } catch (error: Throwable) {
+                if (isCancelRequested || error.message?.contains("cancelled", ignoreCase = true) == true) {
+                    _uiState.update { it.copy(status = RusticBackupProcessStatus.Canceled) }
+                    return@withLock
+                }
                 LogHelper.e(TAG, "loadProcessItems", "Rustic backup failed.", error)
                 _uiState.update { state ->
                     state.copy(
@@ -226,6 +236,16 @@ open class RusticBackupProcessViewModel(
                     )
                 }
             }
+        }
+    }
+
+    fun cancel() {
+        if (isCancelRequested) return
+        isCancelRequested = true
+        _uiState.update { it.copy(status = RusticBackupProcessStatus.Canceling) }
+        viewModelScope.launch(Dispatchers.IO) {
+            mRusticGateway.cancelSnapshot(cancelId)
+            ShellHelper.killRootService()
         }
     }
 

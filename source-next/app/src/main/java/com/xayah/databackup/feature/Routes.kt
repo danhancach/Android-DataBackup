@@ -48,3 +48,9 @@ data object BackupCallLogsRoute : NavKey
 
 @Serializable
 data object BackupMessagesRoute : NavKey
+
+@Serializable
+data object DataMigrationRoute : NavKey
+
+@Serializable
+data object AdvancedSettingsRoute : NavKey

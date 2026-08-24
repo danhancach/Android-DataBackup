@@ -84,6 +84,8 @@ enum class RusticBackupStepStatus {
 
 enum class RusticBackupProcessStatus {
     Processing,
+    Canceling,
+    Canceled,
     Finished,
     Failed,
 }
@@ -110,9 +112,12 @@ data class RusticBackupProcessUiState(
     companion object
 
     val isProcessing: Boolean = status == RusticBackupProcessStatus.Processing
+    val isCanceling: Boolean = status == RusticBackupProcessStatus.Canceling
+    val isCanceled: Boolean = status == RusticBackupProcessStatus.Canceled
+    val canCancel: Boolean = status == RusticBackupProcessStatus.Processing
     val isFinished: Boolean = status == RusticBackupProcessStatus.Finished
     val isFailed: Boolean = status == RusticBackupProcessStatus.Failed
-    val isTerminal: Boolean = isFinished || isFailed
+    val isTerminal: Boolean = isFinished || isFailed || isCanceled
 
     val currentStep: RusticBackupStepUiItem?
         get() = if (isFinished) {

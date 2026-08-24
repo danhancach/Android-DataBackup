@@ -3,6 +3,10 @@ package com.xayah.databackup.feature.backup
 import androidx.lifecycle.viewModelScope
 import arrow.optics.copy
 import com.xayah.databackup.data.BackupConfigRepository
+import com.xayah.databackup.rootservice.RemoteRootService
+import com.xayah.databackup.service.util.IntegrityChecker
+import com.xayah.databackup.service.util.IntegrityReport
+import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.entity.name
 import com.xayah.databackup.feature.BackupConfigRoute
@@ -62,5 +66,19 @@ open class BackupConfigViewModel(
                 onSelected()
             }
         }
+    }
+
+    suspend fun runIntegrityCheck(): IntegrityReport {
+        val config = currentConfig ?: return IntegrityReport(emptyList())
+        val appsDir = "${config.path}/apps"
+        if (RemoteRootService.exists(appsDir).not()) return IntegrityReport(emptyList())
+        val issues = RemoteRootService.listFilePaths(appsDir, listFiles = false, listDirs = true)
+            .map { it.path }
+            .mapNotNull { dirPath ->
+                val dirName = PathHelper.getChildPath(dirPath)
+                val packageName = dirName.substringAfterLast('_', dirName)
+                IntegrityChecker.checkDir(dirPath, dirName, packageName)
+            }
+        return IntegrityReport(issues)
     }
 }

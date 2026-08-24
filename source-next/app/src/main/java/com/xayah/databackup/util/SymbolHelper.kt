@@ -7,4 +7,10 @@ object SymbolHelper {
     const val LF = '\n'
     const val DOT = '•'
     const val PERCENT = '%'
+
+    /**
+     * POSIX sh single-quote escaping.
+     * Example: a'b -> 'a'\''b'
+     */
+    fun shellQuote(value: String): String = "'${value.replace("'", "'\\''")}'"
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.AboutRoute
+import com.xayah.databackup.feature.AdvancedSettingsRoute
 import com.xayah.databackup.ui.component.CustomSUFileDialog
 import com.xayah.databackup.ui.component.LocalFloatingNavigationBarBottomPadding
 import com.xayah.databackup.ui.component.Preference
@@ -112,6 +113,7 @@ fun SettingsScreen(navigator: Navigator) {
             SettingsApplicationCard(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 onAboutClick = { navigator.navigateSafely(AboutRoute) },
+                onAdvancedClick = { navigator.navigateSafely(AdvancedSettingsRoute) },
             )
 
             Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding() + floatingNavigationBarBottomPadding))
@@ -159,6 +161,7 @@ private fun SettingsOverviewCard(
 private fun SettingsApplicationCard(
     modifier: Modifier = Modifier,
     onAboutClick: () -> Unit,
+    onAdvancedClick: () -> Unit,
 ) {
     PreferenceGroup(modifier = modifier) {
         SettingsEntry(
@@ -180,6 +183,7 @@ private fun SettingsApplicationCard(
             icon = ImageVector.vectorResource(R.drawable.ic_wrench),
             title = stringResource(R.string.advanced),
             subtitle = stringResource(R.string.advanced_settings),
+            onClick = onAdvancedClick,
         )
         SettingsEntry(
             icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),

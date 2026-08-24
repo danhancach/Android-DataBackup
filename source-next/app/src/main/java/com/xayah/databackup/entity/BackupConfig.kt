@@ -12,7 +12,29 @@ sealed class BackupBackend {
     @JsonClass(generateAdapter = true)
     data class Rustic(
         val password: String = DEFAULT_PASSWORD,
+        val storage: RusticStorage = RusticStorage(),
     ) : BackupBackend()
+
+    @JsonClass(generateAdapter = true)
+    data class RusticStorage(
+        val type: String = TYPE_LOCAL,
+        val s3: S3CloudConfig? = null,
+    ) {
+        companion object {
+            const val TYPE_LOCAL = "local"
+            const val TYPE_S3 = "s3"
+        }
+
+        val isCloud: Boolean get() = type == TYPE_S3 && s3 != null
+
+        fun repositoryLocation(localRepoPath: String): String {
+            return if (isCloud) S3CloudConfig.RUSTIC_LOCATION else localRepoPath
+        }
+
+        fun backendOptions(): Map<String, String> {
+            return if (isCloud) s3!!.toRusticOptions() else emptyMap()
+        }
+    }
 
     companion object {
         const val DEFAULT_PASSWORD = "anonymous"

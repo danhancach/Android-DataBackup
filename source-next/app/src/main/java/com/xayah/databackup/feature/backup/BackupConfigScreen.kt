@@ -64,7 +64,10 @@ import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.popBackStackSafely
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 internal const val HIDDEN_PASSWORD = "••••••••"
@@ -77,8 +80,23 @@ fun BackupConfigScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val backupConfig by viewModel.backupConfig.collectAsStateWithLifecycle(null)
+    var openIntegrityDialog by remember { mutableStateOf(false) }
+    var integrityMessage by remember { mutableStateOf("") }
     var openEditNameDialog by remember { mutableStateOf(false) }
     var openDeleteDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    if (openIntegrityDialog) {
+        DataBackupDialog(
+            title = stringResource(R.string.integrity_issues_found),
+            onDismissRequest = { openIntegrityDialog = false },
+            content = { Text(integrityMessage) },
+            confirmButton = {
+                DialogActionButton(text = stringResource(R.string.confirm), onClick = { openIntegrityDialog = false })
+            },
+        )
+    }
 
     if (backupConfig != null && openEditNameDialog) {
         EditNameDialog(
@@ -187,6 +205,17 @@ fun BackupConfigScreen(
                                 navigator.navigateSafely(BackupSetupRoute)
                             }
                         },
+                        onCheckIntegrity = {
+                            scope.launch(Dispatchers.IO) {
+                                val report = viewModel.runIntegrityCheck()
+                                if (report.isEmpty) {
+                                    integrityMessage = context.getString(R.string.succeed)
+                                } else {
+                                    integrityMessage = report.formatMessage()
+                                }
+                                openIntegrityDialog = true
+                            }
+                        },
                     )
                 } ?: Box(
                     modifier = Modifier
@@ -209,6 +238,7 @@ fun BackupConfigScreen(
 private fun BackupConfigContent(
     backupConfig: BackupConfig,
     onBackUpNow: () -> Unit,
+    onCheckIntegrity: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -229,6 +259,19 @@ private fun BackupConfigContent(
             )
             Spacer(Modifier.size(8.dp))
             Text(stringResource(R.string.back_up_now))
+        }
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            shape = BackupConfigContainerShape,
+            onClick = onCheckIntegrity,
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
+                contentDescription = null,
+            )
+            Spacer(Modifier.size(8.dp))
+            Text(stringResource(R.string.integrity_check))
         }
 
         SectionHeader(
@@ -279,6 +322,13 @@ private fun BackupBackendCard(
             PasswordPreference(
                 password = it.password,
             )
+            if (it.storage.isCloud) {
+                Preference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_cloud_upload),
+                    title = stringResource(R.string.s3_cloud_storage),
+                    subtitle = it.storage.s3?.summaryOrNull() ?: stringResource(R.string.s3_not_configured),
+                )
+            }
         }
     }
 }

@@ -2,6 +2,8 @@
 
 use std::error::Error;
 
+mod cancel;
+mod cancel_backend;
 mod error;
 mod jni_bridge;
 mod jni_progress;
