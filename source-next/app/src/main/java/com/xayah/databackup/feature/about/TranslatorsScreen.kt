@@ -51,6 +51,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.xayah.databackup.R
 import com.xayah.databackup.data.Translator
+import com.xayah.databackup.ui.component.PreferenceGroupItemSpacing
+import com.xayah.databackup.ui.component.PreferenceHorizontalPadding
+import com.xayah.databackup.ui.component.PreferenceItemMinHeight
+import com.xayah.databackup.ui.component.PreferenceItemVerticalPadding
+import com.xayah.databackup.ui.component.preferenceGroupItemShape
 import com.xayah.databackup.ui.component.rememberFadingEdgeState
 import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
@@ -61,9 +66,9 @@ import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
 
-private val PreferenceGroupShape = RoundedCornerShape(28.dp)
-private val PreferenceGroupTopShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
-private val PreferenceGroupBottomShape = RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
+private val PreferenceGroupShape = preferenceGroupItemShape(isFirstInGroup = true, isLastInGroup = true)
+private val PreferenceGroupTopShape = preferenceGroupItemShape(isFirstInGroup = true, isLastInGroup = false)
+private val PreferenceGroupBottomShape = preferenceGroupItemShape(isFirstInGroup = false, isLastInGroup = true)
 
 @Composable
 fun TranslatorsScreen(
@@ -161,9 +166,11 @@ private fun TranslatorList(
             .padding(top = innerPadding.calculateTopPadding())
             .verticalFadingEdges(fadingEdgeState),
         state = listState,
+        verticalArrangement = Arrangement.spacedBy(PreferenceGroupItemSpacing),
         contentPadding = PaddingValues(
-            start = 16.dp,
-            end = 16.dp,
+            start = PreferenceHorizontalPadding,
+            end = PreferenceHorizontalPadding,
+            top = 8.dp,
             bottom = innerPadding.calculateBottomPadding() + 16.dp,
         ),
     ) {

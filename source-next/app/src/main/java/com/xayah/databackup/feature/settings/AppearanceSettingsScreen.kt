@@ -21,14 +21,16 @@ fun AppearanceSettingsScreen(navigator: Navigator) {
         navigator = navigator,
     ) {
         PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
-            ThemeTypePreference()
+            item { ThemeTypePreference() }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                SwitchablePreference(
-                    icon = ImageVector.vectorResource(R.drawable.ic_palette),
-                    title = stringResource(R.string.monet),
-                    subtitle = stringResource(R.string.monet_desc),
-                    dataStorePair = DynamicColor,
-                )
+                item {
+                    SwitchablePreference(
+                        icon = ImageVector.vectorResource(R.drawable.ic_palette),
+                        title = stringResource(R.string.monet),
+                        subtitle = stringResource(R.string.monet_desc),
+                        dataStorePair = DynamicColor,
+                    )
+                }
             }
         }
     }

@@ -140,31 +140,37 @@ private fun SettingsOverviewCard(
     onRootClick: () -> Unit,
 ) {
     PreferenceGroup(modifier = modifier) {
-        Preference(
-            icon = ImageVector.vectorResource(R.drawable.ic_smartphone),
-            title = stringResource(R.string.model),
-            subtitle = Build.MODEL,
-        )
-        Preference(
-            icon = ImageVector.vectorResource(R.drawable.ic_cpu),
-            title = stringResource(R.string.abi),
-            subtitle = Build.SUPPORTED_ABIS.firstOrNull() ?: stringResource(R.string.unknown),
-        )
-        Preference(
-            icon = ImageVector.vectorResource(R.drawable.ic_hash),
-            title = stringResource(R.string.root),
-            subtitle = rootSummary,
-            subtitleShimmer = rootSummaryLoading,
-            onClick = onRootClick,
-            slot = {
-                IconButton(onClick = onRootClick) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
-                        contentDescription = stringResource(R.string.custom_su_file),
-                    )
-                }
-            },
-        )
+        item {
+            Preference(
+                icon = ImageVector.vectorResource(R.drawable.ic_smartphone),
+                title = stringResource(R.string.model),
+                subtitle = Build.MODEL,
+            )
+        }
+        item {
+            Preference(
+                icon = ImageVector.vectorResource(R.drawable.ic_cpu),
+                title = stringResource(R.string.abi),
+                subtitle = Build.SUPPORTED_ABIS.firstOrNull() ?: stringResource(R.string.unknown),
+            )
+        }
+        item {
+            Preference(
+                icon = ImageVector.vectorResource(R.drawable.ic_hash),
+                title = stringResource(R.string.root),
+                subtitle = rootSummary,
+                subtitleShimmer = rootSummaryLoading,
+                onClick = onRootClick,
+                slot = {
+                    IconButton(onClick = onRootClick) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
+                            contentDescription = stringResource(R.string.custom_su_file),
+                        )
+                    }
+                },
+            )
+        }
     }
 }
 
@@ -178,36 +184,46 @@ private fun SettingsApplicationCard(
     onAdvancedClick: () -> Unit,
 ) {
     PreferenceGroup(modifier = modifier) {
-        SettingsEntry(
-            icon = ImageVector.vectorResource(R.drawable.ic_palette),
-            title = stringResource(R.string.appearance),
-            subtitle = stringResource(R.string.app_theme_settings),
-            onClick = onAppearanceClick,
-        )
-        SettingsEntry(
-            icon = ImageVector.vectorResource(R.drawable.ic_archive),
-            title = stringResource(R.string.backup),
-            subtitle = stringResource(R.string.backup_settings),
-            onClick = onBackupClick,
-        )
-        SettingsEntry(
-            icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
-            title = stringResource(R.string.restore),
-            subtitle = stringResource(R.string.restore_settings),
-            onClick = onRestoreClick,
-        )
-        SettingsEntry(
-            icon = ImageVector.vectorResource(R.drawable.ic_wrench),
-            title = stringResource(R.string.advanced),
-            subtitle = stringResource(R.string.advanced_settings),
-            onClick = onAdvancedClick,
-        )
-        SettingsEntry(
-            icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),
-            title = stringResource(R.string.about),
-            subtitle = BuildConfig.VERSION_NAME,
-            onClick = onAboutClick,
-        )
+        item {
+            SettingsEntry(
+                icon = ImageVector.vectorResource(R.drawable.ic_palette),
+                title = stringResource(R.string.appearance),
+                subtitle = stringResource(R.string.app_theme_settings),
+                onClick = onAppearanceClick,
+            )
+        }
+        item {
+            SettingsEntry(
+                icon = ImageVector.vectorResource(R.drawable.ic_archive),
+                title = stringResource(R.string.backup),
+                subtitle = stringResource(R.string.backup_settings),
+                onClick = onBackupClick,
+            )
+        }
+        item {
+            SettingsEntry(
+                icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
+                title = stringResource(R.string.restore),
+                subtitle = stringResource(R.string.restore_settings),
+                onClick = onRestoreClick,
+            )
+        }
+        item {
+            SettingsEntry(
+                icon = ImageVector.vectorResource(R.drawable.ic_wrench),
+                title = stringResource(R.string.advanced),
+                subtitle = stringResource(R.string.advanced_settings),
+                onClick = onAdvancedClick,
+            )
+        }
+        item {
+            SettingsEntry(
+                icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),
+                title = stringResource(R.string.about),
+                subtitle = BuildConfig.VERSION_NAME,
+                onClick = onAboutClick,
+            )
+        }
     }
 }
 

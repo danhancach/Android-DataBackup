@@ -106,20 +106,24 @@ fun AdvancedSettingsScreen(navigator: Navigator) {
                 title = stringResource(R.string.advanced_settings),
             )
             PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Preference(
-                    icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
-                    title = stringResource(R.string.data_migration),
-                    subtitle = stringResource(R.string.data_migration_desc),
-                    onClick = { navigator.navigateSafely(DataMigrationRoute) },
-                )
-                Preference(
-                    icon = ImageVector.vectorResource(R.drawable.ic_archive),
-                    title = stringResource(R.string.export_log),
-                    subtitle = stringResource(R.string.export_log_desc),
-                    onClick = {
-                        exportLogLauncher.launch("DataBackup_logs_${System.currentTimeMillis()}.zip")
-                    },
-                )
+                item {
+                    Preference(
+                        icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
+                        title = stringResource(R.string.data_migration),
+                        subtitle = stringResource(R.string.data_migration_desc),
+                        onClick = { navigator.navigateSafely(DataMigrationRoute) },
+                    )
+                }
+                item {
+                    Preference(
+                        icon = ImageVector.vectorResource(R.drawable.ic_archive),
+                        title = stringResource(R.string.export_log),
+                        subtitle = stringResource(R.string.export_log_desc),
+                        onClick = {
+                            exportLogLauncher.launch("DataBackup_logs_${System.currentTimeMillis()}.zip")
+                        },
+                    )
+                }
             }
             Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding() + floatingNavigationBarBottomPadding))
         }

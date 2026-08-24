@@ -182,31 +182,36 @@ private fun NewBackupBackendSelector(
         onSelectedIndexChanged = onSelectedIndexChanged,
     ) {
         val rusticBackend = backupBackend as? BackupBackend.Rustic
-        NewBackupPasswordPreference(
-            password = rusticBackend?.password ?: BackupBackend.DEFAULT_PASSWORD,
-            enabled = enabled && rusticBackend != null,
-            onClick = onEditPassword,
-        )
-        rusticBackend?.let { rustic ->
-            SwitchablePreference(
-                enabled = enabled,
-                checked = rustic.storage.isCloud,
-                icon = ImageVector.vectorResource(R.drawable.ic_cloud_upload),
-                title = stringResource(R.string.s3_cloud_storage),
-                subtitle = stringResource(R.string.s3_cloud_storage_desc),
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                onCheckedChange = onToggleCloud,
+        item {
+            NewBackupPasswordPreference(
+                password = rusticBackend?.password ?: BackupBackend.DEFAULT_PASSWORD,
+                enabled = enabled && rusticBackend != null,
+                onClick = onEditPassword,
             )
-            if (rustic.storage.isCloud) {
-                val s3 = rustic.storage.s3
-                Preference(
+        }
+        rusticBackend?.let { rustic ->
+            item {
+                SwitchablePreference(
                     enabled = enabled,
-                    icon = ImageVector.vectorResource(R.drawable.ic_settings),
-                    title = stringResource(R.string.s3_configure),
-                    subtitle = s3?.summaryOrNull() ?: stringResource(R.string.s3_not_configured),
+                    checked = rustic.storage.isCloud,
+                    icon = ImageVector.vectorResource(R.drawable.ic_cloud_upload),
+                    title = stringResource(R.string.s3_cloud_storage),
+                    subtitle = stringResource(R.string.s3_cloud_storage_desc),
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    onClick = onEditS3Config,
+                    onCheckedChange = onToggleCloud,
                 )
+            }
+            if (rustic.storage.isCloud) {
+                item {
+                    Preference(
+                        enabled = enabled,
+                        icon = ImageVector.vectorResource(R.drawable.ic_settings),
+                        title = stringResource(R.string.s3_configure),
+                        subtitle = rustic.storage.s3?.summaryOrNull() ?: stringResource(R.string.s3_not_configured),
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        onClick = onEditS3Config,
+                    )
+                }
             }
         }
     }

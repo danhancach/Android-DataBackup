@@ -304,21 +304,27 @@ private fun BackupConfigContent(
 @Composable
 private fun BackupMetadataCard(backupConfig: BackupConfig) {
     PreferenceGroup {
-        Preference(
-            icon = ImageVector.vectorResource(R.drawable.ic_clock_plus),
-            title = stringResource(R.string.created_at),
-            subtitle = backupConfig.displayCreatedAt,
-        )
-        Preference(
-            icon = ImageVector.vectorResource(R.drawable.ic_clock_arrow_up),
-            title = stringResource(R.string.updated_at),
-            subtitle = backupConfig.displayUpdatedAt,
-        )
-        Preference(
-            icon = ImageVector.vectorResource(R.drawable.ic_id_card),
-            title = stringResource(R.string.id),
-            subtitle = backupConfig.uuidString,
-        )
+        item {
+            Preference(
+                icon = ImageVector.vectorResource(R.drawable.ic_clock_plus),
+                title = stringResource(R.string.created_at),
+                subtitle = backupConfig.displayCreatedAt,
+            )
+        }
+        item {
+            Preference(
+                icon = ImageVector.vectorResource(R.drawable.ic_clock_arrow_up),
+                title = stringResource(R.string.updated_at),
+                subtitle = backupConfig.displayUpdatedAt,
+            )
+        }
+        item {
+            Preference(
+                icon = ImageVector.vectorResource(R.drawable.ic_id_card),
+                title = stringResource(R.string.id),
+                subtitle = backupConfig.uuidString,
+            )
+        }
     }
 }
 
@@ -329,25 +335,31 @@ private fun BackupBackendCard(
     val rusticBackend = backupBackend as? BackupBackend.Rustic
     val isRustic = rusticBackend != null
     PreferenceGroup {
-        Preference(
-            icon = ImageVector.vectorResource(
-                if (isRustic) R.drawable.ic_database_backup else R.drawable.ic_archive
-            ),
-            title = stringResource(if (isRustic) R.string.rustic else R.string.archive),
-            subtitle = stringResource(
-                if (isRustic) R.string.rustic_backup_backend_desc else R.string.archive_backup_backend_desc
-            ),
-        )
-        rusticBackend?.let {
-            PasswordPreference(
-                password = it.password,
+        item {
+            Preference(
+                icon = ImageVector.vectorResource(
+                    if (isRustic) R.drawable.ic_database_backup else R.drawable.ic_archive
+                ),
+                title = stringResource(if (isRustic) R.string.rustic else R.string.archive),
+                subtitle = stringResource(
+                    if (isRustic) R.string.rustic_backup_backend_desc else R.string.archive_backup_backend_desc
+                ),
             )
-            if (it.storage.isCloud) {
-                Preference(
-                    icon = ImageVector.vectorResource(R.drawable.ic_cloud_upload),
-                    title = stringResource(R.string.s3_cloud_storage),
-                    subtitle = it.storage.s3?.summaryOrNull() ?: stringResource(R.string.s3_not_configured),
+        }
+        rusticBackend?.let {
+            item {
+                PasswordPreference(
+                    password = it.password,
                 )
+            }
+            if (it.storage.isCloud) {
+                item {
+                    Preference(
+                        icon = ImageVector.vectorResource(R.drawable.ic_cloud_upload),
+                        title = stringResource(R.string.s3_cloud_storage),
+                        subtitle = it.storage.s3?.summaryOrNull() ?: stringResource(R.string.s3_not_configured),
+                    )
+                }
             }
         }
     }

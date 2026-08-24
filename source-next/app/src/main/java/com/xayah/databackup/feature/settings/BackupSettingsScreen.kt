@@ -43,15 +43,17 @@ fun BackupSettingsScreen(navigator: Navigator) {
             title = stringResource(R.string.backup_dir),
         )
         PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Preference(
-                icon = ImageVector.vectorResource(R.drawable.ic_folder),
-                title = stringResource(R.string.backup_dir),
-                subtitle = backupPath,
-                subtitleMaxLines = Int.MAX_VALUE,
-                subtitleOverflow = TextOverflow.Visible,
-                subtitleFontFamily = FontFamily.Monospace,
-                onClick = { navigator.navigateSafely(BackupDirectoryRoute) },
-            )
+            item {
+                Preference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_folder),
+                    title = stringResource(R.string.backup_dir),
+                    subtitle = backupPath,
+                    subtitleMaxLines = Int.MAX_VALUE,
+                    subtitleOverflow = TextOverflow.Visible,
+                    subtitleFontFamily = FontFamily.Monospace,
+                    onClick = { navigator.navigateSafely(BackupDirectoryRoute) },
+                )
+            }
         }
 
         SectionHeader(
@@ -59,8 +61,8 @@ fun BackupSettingsScreen(navigator: Navigator) {
             title = stringResource(R.string.backup),
         )
         PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
-            AutoScreenOffSwitch()
-            ResetBackupListSwitch()
+            item { AutoScreenOffSwitch() }
+            item { ResetBackupListSwitch() }
         }
 
         SectionHeader(
@@ -68,36 +70,46 @@ fun BackupSettingsScreen(navigator: Navigator) {
             title = stringResource(R.string._default),
         )
         PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
-            SwitchablePreference(
-                icon = ImageVector.vectorResource(R.drawable.ic_resource_package),
-                title = stringResource(R.string.apps),
-                subtitle = stringResource(R.string.apps),
-                dataStorePair = AppsOptionSelectedBackup,
-            )
-            SwitchablePreference(
-                icon = ImageVector.vectorResource(R.drawable.ic_wifi),
-                title = stringResource(R.string.networks),
-                subtitle = stringResource(R.string.networks),
-                dataStorePair = NetworksOptionSelectedBackup,
-            )
-            SwitchablePreference(
-                icon = ImageVector.vectorResource(R.drawable.ic_user),
-                title = stringResource(R.string.contacts),
-                subtitle = stringResource(R.string.contacts),
-                dataStorePair = ContactsOptionSelectedBackup,
-            )
-            SwitchablePreference(
-                icon = ImageVector.vectorResource(R.drawable.ic_phone),
-                title = stringResource(R.string.call_logs),
-                subtitle = stringResource(R.string.call_logs),
-                dataStorePair = CallLogsOptionSelectedBackup,
-            )
-            SwitchablePreference(
-                icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
-                title = stringResource(R.string.messages),
-                subtitle = stringResource(R.string.messages),
-                dataStorePair = MessagesOptionSelectedBackup,
-            )
+            item {
+                SwitchablePreference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_resource_package),
+                    title = stringResource(R.string.apps),
+                    subtitle = stringResource(R.string.apps),
+                    dataStorePair = AppsOptionSelectedBackup,
+                )
+            }
+            item {
+                SwitchablePreference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_wifi),
+                    title = stringResource(R.string.networks),
+                    subtitle = stringResource(R.string.networks),
+                    dataStorePair = NetworksOptionSelectedBackup,
+                )
+            }
+            item {
+                SwitchablePreference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_user),
+                    title = stringResource(R.string.contacts),
+                    subtitle = stringResource(R.string.contacts),
+                    dataStorePair = ContactsOptionSelectedBackup,
+                )
+            }
+            item {
+                SwitchablePreference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_phone),
+                    title = stringResource(R.string.call_logs),
+                    subtitle = stringResource(R.string.call_logs),
+                    dataStorePair = CallLogsOptionSelectedBackup,
+                )
+            }
+            item {
+                SwitchablePreference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
+                    title = stringResource(R.string.messages),
+                    subtitle = stringResource(R.string.messages),
+                    dataStorePair = MessagesOptionSelectedBackup,
+                )
+            }
         }
     }
 }

@@ -144,7 +144,7 @@ fun RestoreSetupScreen(
                     color = MaterialTheme.colorScheme.primary,
                 )
                 PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    AutoScreenOffSwitch()
+                    item { AutoScreenOffSwitch() }
                 }
                 Spacer(modifier = Modifier.height(0.dp))
             }
@@ -373,19 +373,23 @@ private fun SelectedBackupInfo(
                 .padding(top = 16.dp)
                 .padding(horizontal = 16.dp),
         ) {
-            Preference(
-                icon = ImageVector.vectorResource(
-                    if (rusticBackend) R.drawable.ic_database_backup else R.drawable.ic_archive,
-                ),
-                title = selectedBackup.displayName,
-                subtitle = stringResource(if (rusticBackend) R.string.rustic else R.string.archive),
-            )
-            Preference(
-                icon = ImageVector.vectorResource(R.drawable.ic_map_pin),
-                title = stringResource(R.string.backup_dir),
-                subtitle = relativePath,
-                subtitleIcon = ImageVector.vectorResource(R.drawable.ic_folder),
-            )
+            item {
+                Preference(
+                    icon = ImageVector.vectorResource(
+                        if (rusticBackend) R.drawable.ic_database_backup else R.drawable.ic_archive,
+                    ),
+                    title = selectedBackup.displayName,
+                    subtitle = stringResource(if (rusticBackend) R.string.rustic else R.string.archive),
+                )
+            }
+            item {
+                Preference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_map_pin),
+                    title = stringResource(R.string.backup_dir),
+                    subtitle = relativePath,
+                    subtitleIcon = ImageVector.vectorResource(R.drawable.ic_folder),
+                )
+            }
         }
     } ?: Box(
         modifier = Modifier

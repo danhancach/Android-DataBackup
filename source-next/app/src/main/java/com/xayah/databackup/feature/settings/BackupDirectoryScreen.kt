@@ -101,24 +101,28 @@ fun BackupDirectoryScreen(
             PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 uiState.directories.forEach { path ->
                     val selected = path == uiState.selectedPath
+                    item {
+                        Preference(
+                            icon = ImageVector.vectorResource(
+                                if (selected) R.drawable.ic_check else R.drawable.ic_folder
+                            ),
+                            title = path,
+                            subtitle = if (selected) stringResource(R.string.current) else "",
+                            titleMaxLines = Int.MAX_VALUE,
+                            titleOverflow = TextOverflow.Visible,
+                            titleFontFamily = FontFamily.Monospace,
+                            onClick = { viewModel.selectDirectory(path) },
+                        )
+                    }
+                }
+                item {
                     Preference(
-                        icon = ImageVector.vectorResource(
-                            if (selected) R.drawable.ic_check else R.drawable.ic_folder
-                        ),
-                        title = path,
-                        subtitle = if (selected) stringResource(R.string.current) else "",
-                        titleMaxLines = Int.MAX_VALUE,
-                        titleOverflow = TextOverflow.Visible,
-                        titleFontFamily = FontFamily.Monospace,
-                        onClick = { viewModel.selectDirectory(path) },
+                        icon = ImageVector.vectorResource(R.drawable.ic_plus),
+                        title = stringResource(R.string.custom_directory),
+                        subtitle = stringResource(R.string.pick_custom_directory_desc),
+                        onClick = { showCustomPathDialog = true },
                     )
                 }
-                Preference(
-                    icon = ImageVector.vectorResource(R.drawable.ic_plus),
-                    title = stringResource(R.string.custom_directory),
-                    subtitle = stringResource(R.string.pick_custom_directory_desc),
-                    onClick = { showCustomPathDialog = true },
-                )
             }
         }
     }

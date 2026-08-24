@@ -22,24 +22,30 @@ fun RestoreSettingsScreen(navigator: Navigator) {
         navigator = navigator,
     ) {
         PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
-            SwitchablePreference(
-                icon = ImageVector.vectorResource(R.drawable.ic_brush_cleaning),
-                title = stringResource(R.string.clean_restoring),
-                subtitle = stringResource(R.string.clean_restoring_desc),
-                dataStorePair = CleanRestoring,
-            )
-            SwitchablePreference(
-                icon = ImageVector.vectorResource(R.drawable.ic_key_round),
-                title = stringResource(R.string.restore_permissions),
-                subtitle = stringResource(R.string.restore_permissions_desc),
-                dataStorePair = RestorePermissions,
-            )
-            SwitchablePreference(
-                icon = ImageVector.vectorResource(R.drawable.ic_id_card),
-                title = stringResource(R.string.restore_ssaid),
-                subtitle = stringResource(R.string.restore_ssaid_desc),
-                dataStorePair = RestoreSsaid,
-            )
+            item {
+                SwitchablePreference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_brush_cleaning),
+                    title = stringResource(R.string.clean_restoring),
+                    subtitle = stringResource(R.string.clean_restoring_desc),
+                    dataStorePair = CleanRestoring,
+                )
+            }
+            item {
+                SwitchablePreference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_key_round),
+                    title = stringResource(R.string.restore_permissions),
+                    subtitle = stringResource(R.string.restore_permissions_desc),
+                    dataStorePair = RestorePermissions,
+                )
+            }
+            item {
+                SwitchablePreference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_id_card),
+                    title = stringResource(R.string.restore_ssaid),
+                    subtitle = stringResource(R.string.restore_ssaid_desc),
+                    dataStorePair = RestoreSsaid,
+                )
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -60,6 +61,12 @@ import com.xayah.databackup.feature.UpdatesRoute
 import com.xayah.databackup.feature.update.UpdatesStatus
 import com.xayah.databackup.feature.update.UpdatesViewModel
 import com.xayah.databackup.ui.component.LocalFloatingNavigationBarBottomPadding
+import com.xayah.databackup.ui.component.PreferenceGroupItemSpacing
+import com.xayah.databackup.ui.component.PreferenceGroupListItem
+import com.xayah.databackup.ui.component.PreferenceGroupSurface
+import com.xayah.databackup.ui.component.PreferenceHorizontalPadding
+import com.xayah.databackup.ui.component.PreferenceItemMinHeight
+import com.xayah.databackup.ui.component.PreferenceItemVerticalPadding
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.StorageCard
@@ -199,21 +206,53 @@ fun DashboardScreen(
             ) { state ->
                 when (state) {
                     DashboardBackupsUiState.Loading -> DashboardBackupsLoading()
-                    DashboardBackupsUiState.Error -> DashboardBackupCard(
-                        hasError = true,
-                        onRetry = viewModel::retryLoadBackupConfigs,
-                    )
+                    DashboardBackupsUiState.Error -> {
+                        PreferenceGroupSurface(modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                DashboardBackupIcon(
+                                    icon = ImageVector.vectorResource(R.drawable.ic_circle_x),
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                                )
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = stringResource(R.string.error),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                DashboardBackupChip(
+                                    text = stringResource(R.string.retry),
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    labelColor = MaterialTheme.colorScheme.onErrorContainer,
+                                    onClick = viewModel::retryLoadBackupConfigs,
+                                )
+                            }
+                        }
+                    }
                     DashboardBackupsUiState.Empty -> DashboardEmptyBackupsCard(
                         onCreateBackup = { navigator.navigateSafely(BackupSetupRoute) },
                     )
                     is DashboardBackupsUiState.Content -> {
-                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            state.backups.take(3).forEachIndexed { index, backup ->
-                                DashboardBackupCard(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    backup = backup,
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(PreferenceGroupItemSpacing),
+                        ) {
+                            val visibleBackups = state.backups.take(3)
+                            visibleBackups.forEachIndexed { index, backup ->
+                                PreferenceGroupListItem(
+                                    isFirstInGroup = true,
+                                    isLastInGroup = true,
                                     onClick = { navigator.navigateSafely(BackupConfigRoute(index)) },
-                                )
+                                ) {
+                                    DashboardBackupListRowContent(backup = backup)
+                                }
                             }
                         }
                     }
@@ -354,6 +393,47 @@ private fun DashboardBackupsLoading() {
         contentAlignment = Alignment.Center,
     ) {
         LoadingIndicator()
+    }
+}
+
+@Composable
+private fun DashboardBackupListRowContent(
+    backup: BackupConfig,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = PreferenceItemMinHeight)
+            .padding(
+                horizontal = PreferenceHorizontalPadding,
+                vertical = PreferenceItemVerticalPadding,
+            ),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        DashboardBackupIcon(icon = ImageVector.vectorResource(R.drawable.ic_archive))
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
+            Text(
+                text = backup.displayName,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = stringResource(R.string.last_backup_value, backup.displayUpdatedAt),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        DashboardBackupChip(
+            text = stringResource(if (backup.backupBackend is BackupBackend.Rustic) R.string.rustic else R.string.archive),
+            onClick = {},
+        )
     }
 }
 

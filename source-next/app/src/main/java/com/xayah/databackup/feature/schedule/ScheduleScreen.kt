@@ -129,39 +129,49 @@ fun ScheduleScreen(
                 title = stringResource(R.string.configure_automatic_backups),
             )
             PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
-                SwitchablePreference(
-                    enabled = uiState.isLoaded,
-                    checked = uiState.schedule.enabled,
-                    icon = ImageVector.vectorResource(R.drawable.ic_calendar_check),
-                    title = stringResource(R.string.schedule_enabled),
-                    subtitle = stringResource(R.string.schedule_enabled_desc),
-                    onCheckedChange = viewModel::setEnabled,
-                )
-                Preference(
-                    enabled = scheduleConfigured,
-                    icon = ImageVector.vectorResource(R.drawable.ic_clock),
-                    title = stringResource(R.string.schedule_time),
-                    subtitle = timeLabel,
-                    onClick = { openTimeDialog = true },
-                )
-                Preference(
-                    enabled = scheduleConfigured,
-                    icon = ImageVector.vectorResource(R.drawable.ic_archive),
-                    title = stringResource(R.string.schedule_backup_target),
-                    subtitle = backupTargetSubtitle,
-                )
-                Preference(
-                    enabled = uiState.isLoaded,
-                    icon = ImageVector.vectorResource(R.drawable.ic_clock_arrow_up),
-                    title = stringResource(R.string.schedule_next_run_title),
-                    subtitle = nextRunText,
-                )
-                Preference(
-                    enabled = uiState.isLoaded,
-                    icon = ImageVector.vectorResource(R.drawable.ic_clock_plus),
-                    title = stringResource(R.string.schedule_last_run),
-                    subtitle = lastRunText,
-                )
+                item {
+                    SwitchablePreference(
+                        enabled = uiState.isLoaded,
+                        checked = uiState.schedule.enabled,
+                        icon = ImageVector.vectorResource(R.drawable.ic_calendar_check),
+                        title = stringResource(R.string.schedule_enabled),
+                        subtitle = stringResource(R.string.schedule_enabled_desc),
+                        onCheckedChange = viewModel::setEnabled,
+                    )
+                }
+                item {
+                    Preference(
+                        enabled = scheduleConfigured,
+                        icon = ImageVector.vectorResource(R.drawable.ic_clock),
+                        title = stringResource(R.string.schedule_time),
+                        subtitle = timeLabel,
+                        onClick = { openTimeDialog = true },
+                    )
+                }
+                item {
+                    Preference(
+                        enabled = scheduleConfigured,
+                        icon = ImageVector.vectorResource(R.drawable.ic_archive),
+                        title = stringResource(R.string.schedule_backup_target),
+                        subtitle = backupTargetSubtitle,
+                    )
+                }
+                item {
+                    Preference(
+                        enabled = uiState.isLoaded,
+                        icon = ImageVector.vectorResource(R.drawable.ic_clock_arrow_up),
+                        title = stringResource(R.string.schedule_next_run_title),
+                        subtitle = nextRunText,
+                    )
+                }
+                item {
+                    Preference(
+                        enabled = uiState.isLoaded,
+                        icon = ImageVector.vectorResource(R.drawable.ic_clock_plus),
+                        title = stringResource(R.string.schedule_last_run),
+                        subtitle = lastRunText,
+                    )
+                }
             }
             Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding() + floatingNavigationBarBottomPadding))
         }

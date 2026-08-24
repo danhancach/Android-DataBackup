@@ -182,37 +182,45 @@ private fun AboutLinksCard(
     onOpenTranslators: () -> Unit,
 ) {
     PreferenceGroup(modifier = modifier) {
-        ExternalLinkPreference(
-            icon = ImageVector.vectorResource(R.drawable.ic_code),
-            title = stringResource(R.string.github),
-            subtitle = GitHubUrl,
-            onClick = { onOpenUrl(GitHubUrl) },
-        )
-        ExternalLinkPreference(
-            icon = ImageVector.vectorResource(R.drawable.ic_book_text),
-            title = stringResource(R.string.docs),
-            subtitle = DocsUrl,
-            onClick = { onOpenUrl(DocsUrl) },
-        )
-        ExternalLinkPreference(
-            icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
-            title = stringResource(R.string.contact),
-            subtitle = ContactUrl,
-            onClick = { onOpenUrl(ContactUrl) },
-        )
-        Preference(
-            icon = ImageVector.vectorResource(R.drawable.ic_languages),
-            title = stringResource(R.string.translators),
-            subtitle = stringResource(R.string.translators_desc),
-            slot = {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right),
-                    contentDescription = null,
-                )
-            },
-            onClick = onOpenTranslators,
-        )
+        item {
+            ExternalLinkPreference(
+                icon = ImageVector.vectorResource(R.drawable.ic_code),
+                title = stringResource(R.string.github),
+                subtitle = GitHubUrl,
+                onClick = { onOpenUrl(GitHubUrl) },
+            )
+        }
+        item {
+            ExternalLinkPreference(
+                icon = ImageVector.vectorResource(R.drawable.ic_book_text),
+                title = stringResource(R.string.docs),
+                subtitle = DocsUrl,
+                onClick = { onOpenUrl(DocsUrl) },
+            )
+        }
+        item {
+            ExternalLinkPreference(
+                icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
+                title = stringResource(R.string.contact),
+                subtitle = ContactUrl,
+                onClick = { onOpenUrl(ContactUrl) },
+            )
+        }
+        item {
+            Preference(
+                icon = ImageVector.vectorResource(R.drawable.ic_languages),
+                title = stringResource(R.string.translators),
+                subtitle = stringResource(R.string.translators_desc),
+                slot = {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right),
+                        contentDescription = null,
+                    )
+                },
+                onClick = onOpenTranslators,
+            )
+        }
     }
 }
 
