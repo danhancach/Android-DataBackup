@@ -52,7 +52,7 @@ open class RestoreSetupViewModel(
         if (loading) null
         else TargetItem(
             selected = appsSelected,
-            selections = apps.count { it.selected } to apps.size,
+            selections = apps.count { it.isSelected } to apps.size,
         )
     }.stateIn(
         scope = viewModelScope,

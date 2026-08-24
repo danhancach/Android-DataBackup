@@ -1,9 +1,11 @@
 package com.xayah.databackup.data
 
+import android.content.pm.ApplicationInfo
 import com.xayah.databackup.App.Companion.application
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.entity.RestoreApp
+import com.xayah.databackup.entity.RestoreOption
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
@@ -65,16 +67,33 @@ class RestoreRepository {
                     if (dirName.isBlank()) return@mapNotNull null
                     val packageName = dirName.substringAfterLast('_', dirName)
                     val label = dirName.substringBeforeLast('_', dirName).ifBlank { packageName }
+                    val hasApk = RemoteRootService.exists(PathHelper.getBackupAppsApkFilePath(sourcePath, dirName))
+                    val hasInternalData = RemoteRootService.exists(PathHelper.getBackupAppsUserFilePath(sourcePath, dirName)) ||
+                        RemoteRootService.exists(PathHelper.getBackupAppsUserDeFilePath(sourcePath, dirName))
+                    val hasExternalData = RemoteRootService.exists(PathHelper.getBackupAppsDataFilePath(sourcePath, dirName))
+                    val hasAdditionalData = RemoteRootService.exists(PathHelper.getBackupAppsObbFilePath(sourcePath, dirName)) ||
+                        RemoteRootService.exists(PathHelper.getBackupAppsMediaFilePath(sourcePath, dirName))
+                    val isSystemApp = runCatching {
+                        val flags = application.packageManager
+                            .getApplicationInfo(packageName, 0)
+                            .flags
+                        flags and ApplicationInfo.FLAG_SYSTEM != 0
+                    }.getOrDefault(false)
                     RestoreApp(
                         dirName = dirName,
                         label = label,
                         packageName = packageName,
-                        hasApk = RemoteRootService.exists(PathHelper.getBackupAppsApkFilePath(sourcePath, dirName)),
-                        hasInternalData = RemoteRootService.exists(PathHelper.getBackupAppsUserFilePath(sourcePath, dirName)) ||
-                            RemoteRootService.exists(PathHelper.getBackupAppsUserDeFilePath(sourcePath, dirName)),
-                        hasExternalData = RemoteRootService.exists(PathHelper.getBackupAppsDataFilePath(sourcePath, dirName)),
-                        hasAdditionalData = RemoteRootService.exists(PathHelper.getBackupAppsObbFilePath(sourcePath, dirName)) ||
-                            RemoteRootService.exists(PathHelper.getBackupAppsMediaFilePath(sourcePath, dirName)),
+                        hasApk = hasApk,
+                        hasInternalData = hasInternalData,
+                        hasExternalData = hasExternalData,
+                        hasAdditionalData = hasAdditionalData,
+                        isSystemApp = isSystemApp,
+                        option = RestoreOption(
+                            apk = hasApk,
+                            internalData = hasInternalData,
+                            externalData = hasExternalData,
+                            additionalData = hasAdditionalData,
+                        ),
                     )
                 }
                 .sortedBy { it.label.lowercase() }
@@ -90,17 +109,127 @@ class RestoreRepository {
         }
     }
 
-    fun setAppSelected(dirName: String, selected: Boolean) {
+    fun updateApp(dirName: String, transform: (RestoreApp) -> RestoreApp) {
         _apps.update { apps ->
-            apps.map { if (it.dirName == dirName) it.copy(selected = selected) else it }
+            apps.map { if (it.dirName == dirName) transform(it) else it }
         }
     }
 
-    fun selectAll(selected: Boolean) {
-        _apps.update { apps -> apps.map { it.copy(selected = selected) } }
+    fun selectAll(dirName: String, selected: Boolean) {
+        updateApp(dirName) { app ->
+            app.copy(
+                option = app.option.copy(
+                    apk = if (app.hasApk) selected else false,
+                    internalData = if (app.hasInternalData) selected else false,
+                    externalData = if (app.hasExternalData) selected else false,
+                    additionalData = if (app.hasAdditionalData) selected else false,
+                ),
+            )
+        }
     }
 
-    fun getSelectedApps(): List<RestoreApp> = _apps.value.filter { it.selected }
+    fun selectApk(dirName: String, selected: Boolean) {
+        updateApp(dirName) { app ->
+            if (app.hasApk.not()) return@updateApp app
+            app.copy(option = app.option.copy(apk = selected))
+        }
+    }
+
+    fun selectInternalData(dirName: String, selected: Boolean) {
+        updateApp(dirName) { app ->
+            if (app.hasInternalData.not()) return@updateApp app
+            app.copy(option = app.option.copy(internalData = selected))
+        }
+    }
+
+    fun selectExternalData(dirName: String, selected: Boolean) {
+        updateApp(dirName) { app ->
+            if (app.hasExternalData.not()) return@updateApp app
+            app.copy(option = app.option.copy(externalData = selected))
+        }
+    }
+
+    fun selectAdditionalData(dirName: String, selected: Boolean) {
+        updateApp(dirName) { app ->
+            if (app.hasAdditionalData.not()) return@updateApp app
+            app.copy(option = app.option.copy(additionalData = selected))
+        }
+    }
+
+    fun selectAllApps(selected: Boolean) {
+        _apps.update { apps ->
+            apps.map { app ->
+                app.copy(
+                    option = app.option.copy(
+                        apk = if (app.hasApk) selected else false,
+                        internalData = if (app.hasInternalData) selected else false,
+                        externalData = if (app.hasExternalData) selected else false,
+                        additionalData = if (app.hasAdditionalData) selected else false,
+                    ),
+                )
+            }
+        }
+    }
+
+    fun selectAllApk(selected: Boolean) {
+        _apps.update { apps ->
+            apps.map { app ->
+                if (app.hasApk) app.copy(option = app.option.copy(apk = selected)) else app
+            }
+        }
+    }
+
+    fun selectAllData(selected: Boolean) {
+        _apps.update { apps ->
+            apps.map { app ->
+                app.copy(
+                    option = app.option.copy(
+                        internalData = if (app.hasInternalData) selected else app.option.internalData,
+                        externalData = if (app.hasExternalData) selected else app.option.externalData,
+                        additionalData = if (app.hasAdditionalData) selected else app.option.additionalData,
+                    ),
+                )
+            }
+        }
+    }
+
+    fun selectAllIntData(selected: Boolean) {
+        _apps.update { apps ->
+            apps.map { app ->
+                if (app.hasInternalData) {
+                    app.copy(option = app.option.copy(internalData = selected))
+                } else {
+                    app
+                }
+            }
+        }
+    }
+
+    fun selectAllExtData(selected: Boolean) {
+        _apps.update { apps ->
+            apps.map { app ->
+                if (app.hasExternalData) {
+                    app.copy(option = app.option.copy(externalData = selected))
+                } else {
+                    app
+                }
+            }
+        }
+    }
+
+    fun selectAllAddlData(selected: Boolean) {
+        _apps.update { apps ->
+            apps.map { app ->
+                if (app.hasAdditionalData) {
+                    app.copy(option = app.option.copy(additionalData = selected))
+                } else {
+                    app
+                }
+            }
+        }
+    }
+
+    fun getSelectedApps(): List<RestoreApp> = _apps.value.filter { it.isSelected }
 
     fun hasNetworks(): Boolean = _hasNetworks
 

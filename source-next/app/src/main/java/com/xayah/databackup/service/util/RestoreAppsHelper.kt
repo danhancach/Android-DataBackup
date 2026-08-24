@@ -151,6 +151,7 @@ class RestoreAppsHelper(private val mRestoreProcessRepo: RestoreProcessRepositor
     }
 
     private suspend fun restoreApk(app: RestoreApp, sourcePath: String): Pair<Int, String> {
+        if (app.option.apk.not()) return STATUS_SKIP to application.getString(R.string.not_selected)
         if (app.hasApk.not()) return STATUS_SKIP to application.getString(R.string.not_exist)
         val apkArchive = PathHelper.getBackupAppsApkFilePath(sourcePath, app.dirName)
         val tmpDir = "${application.cacheDir.path}/restore_apk_${app.packageName}_${System.currentTimeMillis()}"
@@ -167,6 +168,9 @@ class RestoreAppsHelper(private val mRestoreProcessRepo: RestoreProcessRepositor
     }
 
     private suspend fun restoreInternalData(app: RestoreApp, sourcePath: String, clean: Boolean): List<Pair<Int, String>> {
+        if (app.option.internalData.not()) {
+            return listOf(STATUS_SKIP to application.getString(R.string.not_selected))
+        }
         val results = mutableListOf<Pair<Int, String>>()
         if (app.hasInternalData) {
             val userArchive = PathHelper.getBackupAppsUserFilePath(sourcePath, app.dirName)
@@ -200,6 +204,7 @@ class RestoreAppsHelper(private val mRestoreProcessRepo: RestoreProcessRepositor
     }
 
     private suspend fun restoreExternalData(app: RestoreApp, sourcePath: String, clean: Boolean): Pair<Int, String> {
+        if (app.option.externalData.not()) return STATUS_SKIP to application.getString(R.string.not_selected)
         if (app.hasExternalData.not()) return STATUS_SKIP to application.getString(R.string.not_selected)
         val archive = PathHelper.getBackupAppsDataFilePath(sourcePath, app.dirName)
         return restoreArchive(
@@ -210,6 +215,9 @@ class RestoreAppsHelper(private val mRestoreProcessRepo: RestoreProcessRepositor
     }
 
     private suspend fun restoreAdditionalData(app: RestoreApp, sourcePath: String, clean: Boolean): List<Pair<Int, String>> {
+        if (app.option.additionalData.not()) {
+            return listOf(STATUS_SKIP to application.getString(R.string.not_selected))
+        }
         val results = mutableListOf<Pair<Int, String>>()
         if (app.hasAdditionalData) {
             val obbArchive = PathHelper.getBackupAppsObbFilePath(sourcePath, app.dirName)
